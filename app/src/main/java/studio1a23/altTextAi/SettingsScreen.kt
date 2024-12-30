@@ -9,6 +9,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,10 +20,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import studio1a23.altTextAi.ui.settings.AzureConfigFields
 import studio1a23.altTextAi.ui.settings.OpenAIConfigFields
+
+val ApiTypeNames = mapOf(
+    ApiType.AzureOpenAi to R.string.azure_openai_name,
+    ApiType.OpenAi to R.string.openai_name
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +44,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
         OutlinedTextField(
             value = settings.presetPrompt,
             onValueChange = { viewModel.updatePresetPrompt(it) },
-            label = { Text("Preset Prompt") },
+            label = { Text(stringResource(R.string.settings_preset_prompt)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -48,36 +55,28 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = when (settings.apiType) {
-                    ApiType.AzureOpenAi -> "Azure OpenAI"
-                    ApiType.OpenAi -> "OpenAI"
-                },
+                value = stringResource(ApiTypeNames.getValue(settings.apiType)),
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("API Type") },
+                label = { Text(stringResource(R.string.settings_api_type)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor()
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
             )
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                DropdownMenuItem(
-                    text = { Text("Azure OpenAI") },
-                    onClick = {
-                        viewModel.updateApiType(ApiType.AzureOpenAi)
-                        expanded = false
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("OpenAI") },
-                    onClick = {
-                        viewModel.updateApiType(ApiType.OpenAi)
-                        expanded = false
-                    }
-                )
+                ApiTypeNames.forEach { (type, name) ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(name)) },
+                        onClick = {
+                            viewModel.updateApiType(type)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
 
@@ -97,7 +96,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
             onClick = { viewModel.saveSettings() },
             modifier = Modifier.align(Alignment.End)
         ) {
-            Text("Save")
+            Text(stringResource(R.string.button_save))
         }
     }
 }

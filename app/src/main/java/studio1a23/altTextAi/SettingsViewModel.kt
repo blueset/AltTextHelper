@@ -38,12 +38,12 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
     fun saveSettings() {
         viewModelScope.launch {
             // Ensure Azure endpoint ends with "/"
-            if (_settings.value.activeConfig is AzureOpenAIConfig) {
-                val config = _settings.value.activeConfig as AzureOpenAIConfig
-                if (!config.endpoint.endsWith("/")) {
-                    updateApiConfig(config.copy(endpoint = config.endpoint + "/"))
-                }
-            }
+//            if (_settings.value.activeConfig is AzureOpenAIConfig) {
+//                val config = _settings.value.activeConfig as AzureOpenAIConfig
+//                if (!config.endpoint.endsWith("/")) {
+//                    updateApiConfig(config.copy(endpoint = config.endpoint + "/"))
+//                }
+//            }
             
             SettingsDataStore.saveSettings(
                 application.applicationContext,

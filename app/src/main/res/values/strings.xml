@@ -1,4 +1,27 @@
 <resources>
     <string name="app_name">Alt Text Helper</string>
     <string name="title_activity_share_receiver">Generate Alt Text</string>
+    <string name="settings_api_key">API key</string>
+    <string name="azure_openai_deployment_id">Deployment ID</string>
+    <string name="azure_openai_resource_name">Resource name</string>
+    <string name="azure_openai_api_key_help">API Key is a 32-digit hexadecimal string. Provide either Key 1 or Key 2.</string>
+    <string name="azure_openai_api_resource_name_help"><![CDATA[Name of your Azure OpenAI resource. Can also be found in your endpoint URL like <font face="monospace">https://<b>YourResourceName</b>.openai.azure.com/</font>]]></string>
+    <string name="azure_openai_guide"><![CDATA[Create an API key, resources, and deployment at <a href=\"https://ai.azure.com/\">https://ai.azure.com/</a>.]]></string>
+    <string name="azure_openai_name">Azure OpenAI</string>
+    <string name="openai_name">OpenAI</string>
+    <string name="incomplete_configuration">Configuration is incomplete</string>
+    <string name="openai_guide"><![CDATA[Create your API key at <a href=\"https://platform.openai.com/api-keys\">https://platform.openai.com/api-keys</a>.]]></string>
+    <string name="openai_organization">Organization (optional)</string>
+    <string name="settings_model">Model</string>
+    <string name="settings_preset_prompt">Preset prompt</string>
+    <string name="settings_api_type">API type</string>
+    <string name="button_save">Save</string>
+    <string name="title_settings">Settings</string>
+    <string name="button_back">Back</string>
+    <string name="title_generate_alt_text">Generate Alt Text</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="input_prompt">Prompt</string>
+    <string name="button_copy_to_clipboard">Copy to Clipboard</string>
+    <string name="button_retry">Retry</string>
+    <string name="loading">Loading…</string>
 </resources>

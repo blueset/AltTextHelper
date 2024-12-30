@@ -10,18 +10,17 @@ import com.aallam.openai.api.chat.TextPart
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import com.aallam.openai.client.OpenAIHost
-import studio1a23.altTextAi.AzureOpenAIConfig
+import studio1a23.altTextAi.OpenAIConfig
 import studio1a23.altTextAi.R
 import kotlin.time.Duration.Companion.seconds
 
-suspend fun azureOpenApiComplete(
-    config: AzureOpenAIConfig,
+suspend fun openApiComplete(
+    config: OpenAIConfig,
     base64Image: String,
     presetPrompt: String,
     context: Context
 ): Result<String> {
-    if (config.apiKey.isEmpty() || config.deploymentId.isEmpty() || config.resourceName.isEmpty()) {
+    if (config.apiKey.isEmpty()) {
         return Result.failure(IllegalArgumentException(context.getString(R.string.incomplete_configuration)))
     }
 
@@ -29,7 +28,7 @@ suspend fun azureOpenApiComplete(
         val openai = OpenAI(
             token = config.apiKey,
             timeout = Timeout(socket = 60.seconds),
-            host = OpenAIHost.azure(config.resourceName, config.deploymentId, "2024-08-01-preview"),
+            organization = config.organization.ifEmpty { null },
         )
         val completion = openai.chatCompletion(
             ChatCompletionRequest(

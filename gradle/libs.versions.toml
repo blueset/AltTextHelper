@@ -15,6 +15,7 @@ datastorePreferences = "1.1.1"
 lifecycleViewmodelCompose = "2.8.7"
 navigationCompose = "2.8.5"
 loggingInterceptor = "5.0.0-alpha.14"
+openaiClient = "3.8.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,7 @@ androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "l
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptor" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+openai-client = { group = "com.aallam.openai", name = "openai-client", version.ref = "openaiClient" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

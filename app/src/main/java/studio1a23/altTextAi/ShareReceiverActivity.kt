@@ -1,11 +1,7 @@
 package studio1a23.altTextAi
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
@@ -19,10 +15,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,18 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.request.ImageRequest.*
-import coil.request.SuccessResult
+import coil.request.ImageRequest.Builder
 import studio1a23.altTextAi.ui.theme.AltTextHelperTheme
-import java.io.ByteArrayOutputStream
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
@@ -99,7 +86,7 @@ fun ShareReceiverScreen(imageUri: Uri) {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Generate Alt Text") }
+                title = { Text(stringResource(R.string.title_generate_alt_text)) }
             )
         }
     ) { paddingValues ->
@@ -142,7 +129,7 @@ fun ShareReceiverScreen(imageUri: Uri) {
                         is UiState.Error -> {
                             ErrorDialog(
                                 errorMessage = (uiState as UiState.Error).exception.message
-                                    ?: "Unknown error",
+                                    ?: stringResource(R.string.unknown_error),
                                 onRetry = { viewModel.retry(context, imageUri) },
                             )
                         }
@@ -156,7 +143,7 @@ fun ShareReceiverScreen(imageUri: Uri) {
                         onValueChange = {
                             viewModel.updatePrompt(it)
                         },
-                        label = { Text("Prompt") },
+                        label = { Text(stringResource(R.string.input_prompt)) },
                         enabled = uiState !== UiState.Loading
                     )
                     FilledTonalButton(
@@ -187,7 +174,7 @@ fun ResultDialog(resultText: String, onCopy: () -> Unit) {
             horizontalArrangement = Arrangement.End
         ) {
             FilledTonalButton(onClick = onCopy) {
-                Text("Copy to Clipboard")
+                Text(stringResource(R.string.button_copy_to_clipboard))
             }
         }
     }
@@ -208,7 +195,7 @@ fun ErrorDialog(errorMessage: String, onRetry: () -> Unit) {
             horizontalArrangement = Arrangement.End
         ) {
             FilledTonalButton(onClick = onRetry) {
-                Text("Retry")
+                Text(stringResource(R.string.button_retry))
             }
         }
     }
@@ -222,6 +209,6 @@ fun LoadingDialog() {
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Text("Loading…", style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(R.string.loading), style = MaterialTheme.typography.titleLarge)
     }
 }

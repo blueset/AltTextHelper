@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,27 +45,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AltTextHelperTheme {
-        Greeting("Android")
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val baseTitle = stringResource(id = R.string.app_name)
+    val baseTitle = stringResource(R.string.app_name)
+    val settingsTitle = stringResource(R.string.title_settings)
     val (title, setTitle) = remember { mutableStateOf(baseTitle) }
     val (canPop, setCanPop) = remember { mutableStateOf(false) }
     navController.addOnDestinationChangedListener { controller, _, _ ->
@@ -74,7 +58,7 @@ fun MainScreen() {
         setTitle(
             when (controller.currentBackStackEntry?.destination?.route) {
                 "home" -> baseTitle
-                "settings" -> "Settings"
+                "settings" -> settingsTitle
                 else -> baseTitle
             }
         )
@@ -88,14 +72,19 @@ fun MainScreen() {
                 navigationIcon = {
                     if (canPop) {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(
+                                    R.string.button_back
+                                )
+                            )
                         }
                     }
                 },
                 actions = {
                     if (!canPop) {
                         IconButton(onClick = { navController.navigate("settings") }) {
-                            Icon(Icons.Default.Settings, contentDescription = "Settings")
+                            Icon(Icons.Default.Settings, contentDescription = settingsTitle)
                         }
                     }
                 }

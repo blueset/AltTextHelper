@@ -22,18 +22,21 @@ sealed interface ApiConfig {
 @Serializable
 data class AzureOpenAIConfig(
     val apiKey: String,
-    val endpoint: String,
+    val resourceName: String,
+    val deploymentId: String,
+    val model: String = "gpt-4o",
 ) : ApiConfig
 
 @Serializable
 data class OpenAIConfig(
     val apiKey: String,
     val organization: String = "", // Optional
+    val model: String = "gpt-4o",
 ) : ApiConfig
 
 @Serializable
 data class ApiConfigs(
-    val azure: AzureOpenAIConfig = AzureOpenAIConfig("", ""),
+    val azure: AzureOpenAIConfig = AzureOpenAIConfig("", "", ""),
     val openai: OpenAIConfig = OpenAIConfig("")
 )
 

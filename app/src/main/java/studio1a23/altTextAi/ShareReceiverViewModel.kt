@@ -1,6 +1,6 @@
 package studio1a23.altTextAi
 
-import android.content.ClipData.*
+import android.content.ClipData.newPlainText
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import studio1a23.altTextAi.SettingsDataStore.getSettings
-import studio1a23.altTextAi.api.azureOpenAIFetchCompletion
-import studio1a23.altTextAi.api.provideAzureOpenAIApiService
+import studio1a23.altTextAi.api.azureOpenApiComplete
+import studio1a23.altTextAi.api.openApiComplete
 import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -50,11 +50,8 @@ class ShareReceiverViewModel : ViewModel() {
                         }
                         val presetPrompt = _prompt.value
                         val result = when (val config = settings.activeConfig) {
-                            is AzureOpenAIConfig -> {
-                                val apiService = provideAzureOpenAIApiService(config)
-                                azureOpenAIFetchCompletion(apiService, base64Image, presetPrompt)
-                            }
-                            is OpenAIConfig -> TODO("OpenAI API support is not implemented yet")
+                            is AzureOpenAIConfig -> azureOpenApiComplete(config, base64Image, presetPrompt, context)
+                            is OpenAIConfig -> openApiComplete(config, base64Image, presetPrompt, context)
                         }
                         when {
                             result.isSuccess -> {
