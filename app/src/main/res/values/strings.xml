@@ -12,6 +12,7 @@
     <string name="incomplete_configuration">Configuration is incomplete</string>
     <string name="openai_guide"><![CDATA[Create your API key at <a href=\"https://platform.openai.com/api-keys\">https://platform.openai.com/api-keys</a>.]]></string>
     <string name="claude_guide"><![CDATA[Create your API key at <a href=\"https://console.anthropic.com/\">https://console.anthropic.com/</a>.]]></string>
+    <string name="gemini_guide"><![CDATA[Create your API key at <a href=\"https://aistudio.google.com/app/\">https://aistudio.google.com/app/</a>.]]></string>
     <string name="openai_organization">Organization (optional)</string>
     <string name="settings_model">Model</string>
     <string name="settings_preset_prompt">Preset prompt</string>
@@ -27,4 +28,5 @@
     <string name="loading">Loading…</string>
     <string name="error_no_response">No response</string>
     <string name="claude_name">Anthropic Claude</string>
+    <string name="gemini_name">Gemini</string>
 </resources>

@@ -10,6 +10,7 @@ import com.aallam.openai.api.chat.TextPart
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import studio1a23.altTextAi.MAX_TOKENS
 import studio1a23.altTextAi.OpenAIConfig
 import studio1a23.altTextAi.R
 import kotlin.time.Duration.Companion.seconds
@@ -20,7 +21,7 @@ suspend fun openApiComplete(
     presetPrompt: String,
     context: Context
 ): Result<String> {
-    if (config.apiKey.isEmpty()) {
+    if (config.apiKey.isEmpty() || config.model.isEmpty()) {
         return Result.failure(IllegalArgumentException(context.getString(R.string.incomplete_configuration)))
     }
 
@@ -33,7 +34,7 @@ suspend fun openApiComplete(
         val completion = openai.chatCompletion(
             ChatCompletionRequest(
                 model = ModelId(config.model),
-                maxTokens = 1024, // adjust as needed
+                maxTokens = MAX_TOKENS,
                 messages = listOf(
                     ChatMessage(
                         role = ChatRole.User,

@@ -25,12 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import studio1a23.altTextAi.ui.settings.AzureConfigFields
 import studio1a23.altTextAi.ui.settings.ClaudeConfigFields
+import studio1a23.altTextAi.ui.settings.GeminiConfigFields
 import studio1a23.altTextAi.ui.settings.OpenAIConfigFields
 
 private fun getApiTypeName(type: ApiType) = when (type) {
     ApiType.AzureOpenAi -> R.string.azure_openai_name
     ApiType.OpenAi -> R.string.openai_name
     ApiType.Claude -> R.string.claude_name
+    ApiType.Gemini -> R.string.gemini_name
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,6 +95,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
                 onValueChange = viewModel::updateApiConfig
             )
             is ClaudeConfig -> ClaudeConfigFields(
+                config = config,
+                onValueChange = viewModel::updateApiConfig
+            )
+            is GeminiConfig -> GeminiConfigFields(
                 config = config,
                 onValueChange = viewModel::updateApiConfig
             )

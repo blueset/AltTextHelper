@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import studio1a23.altTextAi.SettingsDataStore.getSettings
 import studio1a23.altTextAi.api.azureOpenApiComplete
 import studio1a23.altTextAi.api.claudeComplete
+import studio1a23.altTextAi.api.geminiComplete
 import studio1a23.altTextAi.api.openApiComplete
 import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
@@ -41,8 +42,9 @@ class ShareReceiverViewModel : ViewModel() {
     fun processImage(context: Context, imageUri: Uri) {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-            val base64Image = loadImageAsBase64(context, imageUri)
-            if (base64Image != null) {
+            val bitmapImage = loadImageAsBitmap(context, imageUri)
+            if (bitmapImage != null) {
+                val base64Image by lazy { bitmapImage.toPngBase64() }
                 // Fetch settings from preferences
                 getSettings(context).collect { settings ->
                     try {
@@ -54,6 +56,7 @@ class ShareReceiverViewModel : ViewModel() {
                             is AzureOpenAIConfig -> azureOpenApiComplete(config, base64Image, presetPrompt, context)
                             is OpenAIConfig -> openApiComplete(config, base64Image, presetPrompt, context)
                             is ClaudeConfig -> claudeComplete(config, base64Image, presetPrompt, context)
+                            is GeminiConfig -> geminiComplete(config, bitmapImage, presetPrompt, context)
                         }
                         when {
                             result.isSuccess -> {
@@ -93,8 +96,7 @@ class ShareReceiverViewModel : ViewModel() {
     }
 }
 
-@OptIn(ExperimentalEncodingApi::class)
-suspend fun loadImageAsBase64(context: Context, imageUri: Uri): String? {
+suspend fun loadImageAsBitmap(context: Context, imageUri: Uri): Bitmap? {
     val loader = context.imageLoader
     val request = Builder(context)
         .data(imageUri)
@@ -102,10 +104,14 @@ suspend fun loadImageAsBase64(context: Context, imageUri: Uri): String? {
         .build()
     val result = (loader.execute(request) as? SuccessResult)?.drawable
     return result?.let { drawable ->
-        val bitmap = (drawable as BitmapDrawable).bitmap
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val byteArray = outputStream.toByteArray()
-        Base64.encode(byteArray)
+        (drawable as BitmapDrawable).bitmap
     }
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+fun Bitmap.toPngBase64(): String {
+    val outputStream = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    val byteArray = outputStream.toByteArray()
+    return Base64.encode(byteArray)
 }

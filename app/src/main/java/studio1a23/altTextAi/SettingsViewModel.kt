@@ -28,6 +28,7 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
             is AzureOpenAIConfig -> _settings.value.configs.copy(azure = config)
             is OpenAIConfig -> _settings.value.configs.copy(openai = config)
             is ClaudeConfig -> _settings.value.configs.copy(claude = config)
+            is GeminiConfig -> _settings.value.configs.copy(gemini = config)
         }
         _settings.value = _settings.value.copy(configs = newConfigs)
     }
@@ -38,14 +39,6 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
 
     fun saveSettings() {
         viewModelScope.launch {
-            // Ensure Azure endpoint ends with "/"
-//            if (_settings.value.activeConfig is AzureOpenAIConfig) {
-//                val config = _settings.value.activeConfig as AzureOpenAIConfig
-//                if (!config.endpoint.endsWith("/")) {
-//                    updateApiConfig(config.copy(endpoint = config.endpoint + "/"))
-//                }
-//            }
-            
             SettingsDataStore.saveSettings(
                 application.applicationContext,
                 _settings.value

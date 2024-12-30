@@ -1,9 +1,7 @@
 package studio1a23.altTextAi.api
 
 import android.content.Context
-import androidx.compose.ui.util.fastFirstOrNull
 import com.google.gson.annotations.SerializedName
-import studio1a23.altTextAi.ClaudeConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -11,6 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
+import studio1a23.altTextAi.ClaudeConfig
+import studio1a23.altTextAi.MAX_TOKENS
 import studio1a23.altTextAi.R
 import java.util.concurrent.TimeUnit
 
@@ -43,7 +43,7 @@ data class ImageSource(
 data class ClaudeRequest(
     val model: String = "claude-3-5-sonnet-latest",
     @SerializedName("max_tokens")
-    val maxTokens: Int = 1024,
+    val maxTokens: Int = MAX_TOKENS,
     val messages: List<ClaudeMessage>
 )
 
@@ -66,7 +66,7 @@ suspend fun claudeComplete(
     presetPrompt: String,
     context: Context
 ): Result<String> {
-    if (config.apiKey.isEmpty()) {
+    if (config.apiKey.isEmpty() || config.model.isEmpty()) {
         return Result.failure(IllegalArgumentException(context.getString(R.string.incomplete_configuration)))
     }
 

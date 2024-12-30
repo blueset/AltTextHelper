@@ -16,6 +16,7 @@ sealed interface ApiConfig {
             ApiType.AzureOpenAi -> configs.azure
             ApiType.OpenAi -> configs.openai
             ApiType.Claude -> configs.claude
+            ApiType.Gemini -> configs.gemini
         }
     }
 }
@@ -42,16 +43,24 @@ data class ClaudeConfig(
 ) : ApiConfig
 
 @Serializable
+data class GeminiConfig(
+    val apiKey: String,
+    val model: String = "gemini-2.0-flash-exp",
+) : ApiConfig
+
+@Serializable
 data class ApiConfigs(
     val azure: AzureOpenAIConfig = AzureOpenAIConfig("", "", ""),
     val openai: OpenAIConfig = OpenAIConfig(""),
-    val claude: ClaudeConfig = ClaudeConfig("")
+    val claude: ClaudeConfig = ClaudeConfig(""),
+    val gemini: GeminiConfig = GeminiConfig("")
 )
 
 enum class ApiType {
     AzureOpenAi,
     OpenAi,
-    Claude;
+    Claude,
+    Gemini;
 
     companion object {
         fun fromString(value: String?): ApiType {
