@@ -29,4 +29,6 @@
     <string name="error_no_response">No response</string>
     <string name="claude_name">Anthropic Claude</string>
     <string name="gemini_name">Gemini</string>
+    <string name="openai_compatible_base_url">Base URL</string>
+    <string name="openai_compatible_name">OpenAI-compatible API</string>
 </resources>

@@ -17,6 +17,7 @@ navigationCompose = "2.8.5"
 loggingInterceptor = "5.0.0-alpha.14"
 openaiClient = "3.8.2"
 generativeai = "0.9.0"
+markwon = "4.6.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,11 @@ logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-intercep
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 openai-client = { group = "com.aallam.openai", name = "openai-client", version.ref = "openaiClient" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+markwon-core = { group = "io.noties.markwon", name = "core", version.ref = "markwon" }
+markwon-linkify = { group = "io.noties.markwon", name = "linkify", version.ref = "markwon" }
+markwon-html = { group = "io.noties.markwon", name = "html", version.ref = "markwon" }
+markwon-syntaxHighlight = { group = "io.noties.markwon", name = "syntax-highlight", version.ref = "markwon" }
+prism4j-languages = { group = "ca.blarg", name = "prism4j-languages", version = "1.0.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

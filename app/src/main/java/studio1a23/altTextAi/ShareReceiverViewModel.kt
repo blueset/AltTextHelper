@@ -19,6 +19,7 @@ import studio1a23.altTextAi.SettingsDataStore.getSettings
 import studio1a23.altTextAi.api.azureOpenApiComplete
 import studio1a23.altTextAi.api.claudeComplete
 import studio1a23.altTextAi.api.geminiComplete
+import studio1a23.altTextAi.api.openApiCompatibleComplete
 import studio1a23.altTextAi.api.openApiComplete
 import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
@@ -57,6 +58,7 @@ class ShareReceiverViewModel : ViewModel() {
                             is OpenAIConfig -> openApiComplete(config, base64Image, presetPrompt, context)
                             is ClaudeConfig -> claudeComplete(config, base64Image, presetPrompt, context)
                             is GeminiConfig -> geminiComplete(config, bitmapImage, presetPrompt, context)
+                            is OpenAICompatibleConfig -> openApiCompatibleComplete(config, base64Image, presetPrompt, context)
                         }
                         when {
                             result.isSuccess -> {

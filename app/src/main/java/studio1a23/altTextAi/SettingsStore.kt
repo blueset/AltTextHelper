@@ -17,6 +17,7 @@ sealed interface ApiConfig {
             ApiType.OpenAi -> configs.openai
             ApiType.Claude -> configs.claude
             ApiType.Gemini -> configs.gemini
+            ApiType.OpenAiCompatible -> configs.openaiCompatible
         }
     }
 }
@@ -37,6 +38,16 @@ data class OpenAIConfig(
 ) : ApiConfig
 
 @Serializable
+data class OpenAICompatibleConfig(
+    val apiKey: String,
+    val baseUrl: String = "",
+    val model: String = "",
+) : ApiConfig {
+    val baseUrlWithSlash: String
+        get() = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
+}
+
+@Serializable
 data class ClaudeConfig(
     val apiKey: String,
     val model: String = "claude-3-5-sonnet-latest",
@@ -53,14 +64,16 @@ data class ApiConfigs(
     val azure: AzureOpenAIConfig = AzureOpenAIConfig("", "", ""),
     val openai: OpenAIConfig = OpenAIConfig(""),
     val claude: ClaudeConfig = ClaudeConfig(""),
-    val gemini: GeminiConfig = GeminiConfig("")
+    val gemini: GeminiConfig = GeminiConfig(""),
+    val openaiCompatible: OpenAICompatibleConfig = OpenAICompatibleConfig(""),
 )
 
 enum class ApiType {
     AzureOpenAi,
     OpenAi,
     Claude,
-    Gemini;
+    Gemini,
+    OpenAiCompatible;
 
     companion object {
         fun fromString(value: String?): ApiType {

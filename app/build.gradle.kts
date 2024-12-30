@@ -71,6 +71,14 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.openai.client)
     implementation(libs.generativeai)
+    implementation(libs.markwon.core)
+    implementation(libs.markwon.linkify)
+    implementation(libs.markwon.html)
+    implementation(libs.markwon.syntaxHighlight) {
+        exclude(group = "org.jetbrains", module = "annotations-java5")
+    }
+    implementation(libs.prism4j.languages)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

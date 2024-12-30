@@ -29,6 +29,7 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
             is OpenAIConfig -> _settings.value.configs.copy(openai = config)
             is ClaudeConfig -> _settings.value.configs.copy(claude = config)
             is GeminiConfig -> _settings.value.configs.copy(gemini = config)
+            is OpenAICompatibleConfig -> _settings.value.configs.copy(openaiCompatible = config)
         }
         _settings.value = _settings.value.copy(configs = newConfigs)
     }

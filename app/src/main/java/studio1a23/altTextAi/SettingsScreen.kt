@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import studio1a23.altTextAi.ui.settings.AzureConfigFields
 import studio1a23.altTextAi.ui.settings.ClaudeConfigFields
 import studio1a23.altTextAi.ui.settings.GeminiConfigFields
+import studio1a23.altTextAi.ui.settings.OpenAICompatibleConfigFields
 import studio1a23.altTextAi.ui.settings.OpenAIConfigFields
 
 private fun getApiTypeName(type: ApiType) = when (type) {
@@ -33,6 +36,7 @@ private fun getApiTypeName(type: ApiType) = when (type) {
     ApiType.OpenAi -> R.string.openai_name
     ApiType.Claude -> R.string.claude_name
     ApiType.Gemini -> R.string.gemini_name
+    ApiType.OpenAiCompatible -> R.string.openai_compatible_name
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,68 +49,84 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        OutlinedTextField(
-            value = settings.presetPrompt,
-            onValueChange = { viewModel.updatePresetPrompt(it) },
-            label = { Text(stringResource(R.string.settings_preset_prompt)) },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // API Type Selection
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
-                value = stringResource(getApiTypeName(settings.apiType)),
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.settings_api_type)) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                value = settings.presetPrompt,
+                onValueChange = { viewModel.updatePresetPrompt(it) },
+                label = { Text(stringResource(R.string.settings_preset_prompt)) },
+                modifier = Modifier.fillMaxWidth()
             )
-            ExposedDropdownMenu(
+
+            // API Type Selection
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = it },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                ApiType.entries.forEach { type ->
-                    DropdownMenuItem(
-                        text = { Text(stringResource(getApiTypeName(type))) },
-                        onClick = {
-                            viewModel.updateApiType(type)
-                            expanded = false
-                        }
-                    )
+                OutlinedTextField(
+                    value = stringResource(getApiTypeName(settings.apiType)),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.settings_api_type)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    ApiType.entries.forEach { type ->
+                        DropdownMenuItem(
+                            text = { Text(stringResource(getApiTypeName(type))) },
+                            onClick = {
+                                viewModel.updateApiType(type)
+                                expanded = false
+                            }
+                        )
+                    }
                 }
+            }
+
+            // API-specific fields
+            when (val config = settings.activeConfig) {
+                is AzureOpenAIConfig -> AzureConfigFields(
+                    config = config,
+                    onValueChange = viewModel::updateApiConfig
+                )
+
+                is OpenAIConfig -> OpenAIConfigFields(
+                    config = config,
+                    onValueChange = viewModel::updateApiConfig
+                )
+
+                is ClaudeConfig -> ClaudeConfigFields(
+                    config = config,
+                    onValueChange = viewModel::updateApiConfig
+                )
+
+                is GeminiConfig -> GeminiConfigFields(
+                    config = config,
+                    onValueChange = viewModel::updateApiConfig
+                )
+
+                is OpenAICompatibleConfig -> OpenAICompatibleConfigFields(
+                    config = config,
+                    prompt = settings.presetPrompt,
+                    onValueChange = viewModel::updateApiConfig
+                )
             }
         }
 
-        // API-specific fields
-        when (val config = settings.activeConfig) {
-            is AzureOpenAIConfig -> AzureConfigFields(
-                config = config,
-                onValueChange = viewModel::updateApiConfig
-            )
-            is OpenAIConfig -> OpenAIConfigFields(
-                config = config,
-                onValueChange = viewModel::updateApiConfig
-            )
-            is ClaudeConfig -> ClaudeConfigFields(
-                config = config,
-                onValueChange = viewModel::updateApiConfig
-            )
-            is GeminiConfig -> GeminiConfigFields(
-                config = config,
-                onValueChange = viewModel::updateApiConfig
-            )
-        }
-
         Button(
+            modifier = Modifier.align(Alignment.End),
             onClick = { viewModel.saveSettings() },
-            modifier = Modifier.align(Alignment.End)
         ) {
             Text(stringResource(R.string.button_save))
         }
