@@ -1,16 +1,14 @@
 package studio1a23.altTextAi
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(private val application: Application) : AndroidViewModel(application) {
-    private val _settings = MutableStateFlow(Settings("", "", ""))
+    private val _settings = MutableStateFlow(Settings.build())
     val settings: StateFlow<Settings> = _settings
 
     init {
@@ -21,12 +19,16 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         }
     }
 
-    fun updateEndpoint(endpoint: String) {
-        _settings.value = _settings.value.copy(endpoint = endpoint)
+    fun updateApiType(type: ApiType) {
+        _settings.value = _settings.value.copy(apiType = type)
     }
 
-    fun updateApiKey(apiKey: String) {
-        _settings.value = _settings.value.copy(apiKey = apiKey)
+    fun updateApiConfig(config: ApiConfig) {
+        val newConfigs = when (config) {
+            is AzureOpenAIConfig -> _settings.value.configs.copy(azure = config)
+            is OpenAIConfig -> _settings.value.configs.copy(openai = config)
+        }
+        _settings.value = _settings.value.copy(configs = newConfigs)
     }
 
     fun updatePresetPrompt(presetPrompt: String) {
@@ -35,14 +37,17 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
 
     fun saveSettings() {
         viewModelScope.launch {
-            if (!_settings.value.endpoint.endsWith("/")) {
-                _settings.value = _settings.value.copy(endpoint = _settings.value.endpoint + "/")
+            // Ensure Azure endpoint ends with "/"
+            if (_settings.value.activeConfig is AzureOpenAIConfig) {
+                val config = _settings.value.activeConfig as AzureOpenAIConfig
+                if (!config.endpoint.endsWith("/")) {
+                    updateApiConfig(config.copy(endpoint = config.endpoint + "/"))
+                }
             }
+            
             SettingsDataStore.saveSettings(
                 application.applicationContext,
-                _settings.value.endpoint,
-                _settings.value.apiKey,
-                _settings.value.presetPrompt
+                _settings.value
             )
         }
     }

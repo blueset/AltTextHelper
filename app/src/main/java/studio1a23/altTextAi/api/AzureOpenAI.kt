@@ -1,4 +1,4 @@
-package studio1a23.altTextAi
+package studio1a23.altTextAi.api
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -6,6 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
+import studio1a23.altTextAi.AzureOpenAIConfig
 
 interface OpenAIApiService {
     @POST("completions?api-version=2024-08-01-preview")
@@ -60,14 +61,14 @@ data class CompletionResponseMessage (
     val role: String
 )
 
-fun provideOpenAIApiService(endpoint: String, apiKey: String): OpenAIApiService {
+fun provideAzureOpenAIApiService(config: AzureOpenAIConfig): OpenAIApiService {
     val logging = HttpLoggingInterceptor()
     logging.setLevel(HttpLoggingInterceptor.Level.BODY)
     val okHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val request = chain.request()
                 .newBuilder()
-                .addHeader("api-key", apiKey)
+                .addHeader("api-key", config.apiKey)
                 .build()
             chain.proceed(request)
         }
@@ -75,14 +76,14 @@ fun provideOpenAIApiService(endpoint: String, apiKey: String): OpenAIApiService 
         .build()
 
     return Retrofit.Builder()
-        .baseUrl(endpoint)
+        .baseUrl(config.endpoint)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(OpenAIApiService::class.java)
 }
 
-suspend fun fetchCompletion(
+suspend fun azureOpenAIFetchCompletion(
     apiService: OpenAIApiService,
     base64Image: String,
     presetPrompt: String

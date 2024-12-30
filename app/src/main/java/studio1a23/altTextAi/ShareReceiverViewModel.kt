@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import studio1a23.altTextAi.SettingsDataStore.getSettings
+import studio1a23.altTextAi.api.azureOpenAIFetchCompletion
+import studio1a23.altTextAi.api.provideAzureOpenAIApiService
 import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -42,23 +44,32 @@ class ShareReceiverViewModel : ViewModel() {
             if (base64Image != null) {
                 // Fetch settings from preferences
                 getSettings(context).collect { settings ->
-                    val apiService = provideOpenAIApiService(settings.endpoint, settings.apiKey)
-                    if (_prompt.value.isBlank()) {
-                        _prompt.value = settings.presetPrompt
-                    }
-                    val presetPrompt = _prompt.value
-                    val result = fetchCompletion(apiService, base64Image, presetPrompt)
-                    when {
-                        result.isSuccess -> {
-                            resultText = result.getOrThrow()
-                            _uiState.value = UiState.Success(result.getOrThrow())
+                    try {
+                        if (_prompt.value.isBlank()) {
+                            _prompt.value = settings.presetPrompt
                         }
+                        val presetPrompt = _prompt.value
+                        val result = when (val config = settings.activeConfig) {
+                            is AzureOpenAIConfig -> {
+                                val apiService = provideAzureOpenAIApiService(config)
+                                azureOpenAIFetchCompletion(apiService, base64Image, presetPrompt)
+                            }
+                            is OpenAIConfig -> TODO("OpenAI API support is not implemented yet")
+                        }
+                        when {
+                            result.isSuccess -> {
+                                resultText = result.getOrThrow()
+                                _uiState.value = UiState.Success(result.getOrThrow())
+                            }
 
-                        result.isFailure -> {
-                            _uiState.value = UiState.Error(
-                                result.exceptionOrNull() ?: Exception("Unknown exception")
-                            )
+                            result.isFailure -> {
+                                _uiState.value = UiState.Error(
+                                    result.exceptionOrNull() ?: Exception("Unknown exception")
+                                )
+                            }
                         }
+                    } catch (e: NotImplementedError) {
+                        _uiState.value = UiState.Error(e)
                     }
                 }
             } else {

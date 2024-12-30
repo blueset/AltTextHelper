@@ -6,35 +6,108 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+sealed interface ApiConfig {
+    companion object {
+        fun fromApiType(type: ApiType, configs: ApiConfigs): ApiConfig = when (type) {
+            ApiType.AzureOpenAi -> configs.azure
+            ApiType.OpenAi -> configs.openai
+        }
+    }
+}
+
+@Serializable
+data class AzureOpenAIConfig(
+    val apiKey: String,
+    val endpoint: String,
+) : ApiConfig
+
+@Serializable
+data class OpenAIConfig(
+    val apiKey: String,
+    val organization: String = "", // Optional
+) : ApiConfig
+
+@Serializable
+data class ApiConfigs(
+    val azure: AzureOpenAIConfig = AzureOpenAIConfig("", ""),
+    val openai: OpenAIConfig = OpenAIConfig("")
+)
+
+enum class ApiType {
+    AzureOpenAi,
+    OpenAi;
+
+    companion object {
+        fun fromString(value: String?): ApiType {
+            return try {
+                value?.let { valueOf(it) } ?: AzureOpenAi
+            } catch (e: IllegalArgumentException) {
+                AzureOpenAi
+            }
+        }
+    }
+
+    override fun toString(): String = name
+}
+
+val DEFAULT_API_TYPE = ApiType.AzureOpenAi
 
 object SettingsDataStore {
     private val Context.dataStore by preferencesDataStore(name = "settings")
 
-    val ENDPOINT = stringPreferencesKey("endpoint")
-    val API_KEY = stringPreferencesKey("api_key")
-    val PRESET_PROMPT = stringPreferencesKey("preset_prompt")
+    private val API_CONFIG = stringPreferencesKey("api_config")
+    private val API_TYPE = stringPreferencesKey("api_type")
+    private val PRESET_PROMPT = stringPreferencesKey("preset_prompt")
 
-    suspend fun saveSettings(context: Context, endpoint: String, apiKey: String, presetPrompt: String) {
+    suspend fun saveSettings(context: Context, newSettings: Settings) {
         context.dataStore.edit { settings ->
-            settings[ENDPOINT] = endpoint
-            settings[API_KEY] = apiKey
-            settings[PRESET_PROMPT] = presetPrompt
+            settings[API_CONFIG] = Json.encodeToString(newSettings.configs)
+            settings[API_TYPE] = newSettings.apiType.toString()
+            settings[PRESET_PROMPT] = newSettings.presetPrompt
         }
     }
 
     fun getSettings(context: Context): Flow<Settings> {
         return context.dataStore.data.map { preferences ->
-            Settings(
-                endpoint = preferences[ENDPOINT] ?: "",
-                apiKey = preferences[API_KEY] ?: "",
-                presetPrompt = preferences[PRESET_PROMPT] ?: ""
+            val apiType = ApiType.fromString(preferences[API_TYPE])
+            val apiConfigJson = preferences[API_CONFIG]
+
+            val configs = try {
+                apiConfigJson?.let { Json.decodeFromString<ApiConfigs>(apiConfigJson) }
+            } catch (e: Exception) {
+                null
+            }
+
+            Settings.build(
+                configs = configs,
+                apiType = apiType,
+                presetPrompt = preferences[PRESET_PROMPT]
             )
         }
     }
 }
 
 data class Settings(
-    val endpoint: String,
-    val apiKey: String,
+    val configs: ApiConfigs,
+    val apiType: ApiType,
     val presetPrompt: String
-)
+) {
+    companion object {
+        fun build(
+            configs: ApiConfigs? = null,
+            apiType: ApiType? = null,
+            presetPrompt: String? = null
+        ) = Settings(
+            configs ?: ApiConfigs(),
+            apiType ?: DEFAULT_API_TYPE,
+            presetPrompt ?: ""
+        )
+    }
+
+    val activeConfig: ApiConfig
+        get() = ApiConfig.fromApiType(apiType, configs)
+}
