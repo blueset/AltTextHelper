@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "studio1a23.altTextAi"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "studio1a23.altTextAi"
         minSdk = 31
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
