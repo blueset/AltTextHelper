@@ -27,6 +27,7 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         val newConfigs = when (config) {
             is AzureOpenAIConfig -> _settings.value.configs.copy(azure = config)
             is OpenAIConfig -> _settings.value.configs.copy(openai = config)
+            is ClaudeConfig -> _settings.value.configs.copy(claude = config)
         }
         _settings.value = _settings.value.copy(configs = newConfigs)
     }

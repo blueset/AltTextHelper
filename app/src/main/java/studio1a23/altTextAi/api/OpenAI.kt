@@ -33,7 +33,7 @@ suspend fun openApiComplete(
         val completion = openai.chatCompletion(
             ChatCompletionRequest(
                 model = ModelId(config.model),
-                maxTokens = 300, // adjust as needed
+                maxTokens = 1024, // adjust as needed
                 messages = listOf(
                     ChatMessage(
                         role = ChatRole.User,
@@ -49,7 +49,7 @@ suspend fun openApiComplete(
         )
 
         return completion.choices.firstOrNull()?.message?.content?.let { Result.success(it) }
-            ?: Result.failure(Exception("No response"))
+            ?: Result.failure(Exception(context.getString(R.string.error_no_response)))
     } catch (e: Exception) {
         return Result.failure(e)
     }

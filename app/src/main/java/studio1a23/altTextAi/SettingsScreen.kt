@@ -24,12 +24,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import studio1a23.altTextAi.ui.settings.AzureConfigFields
+import studio1a23.altTextAi.ui.settings.ClaudeConfigFields
 import studio1a23.altTextAi.ui.settings.OpenAIConfigFields
 
-val ApiTypeNames = mapOf(
-    ApiType.AzureOpenAi to R.string.azure_openai_name,
-    ApiType.OpenAi to R.string.openai_name
-)
+private fun getApiTypeName(type: ApiType) = when (type) {
+    ApiType.AzureOpenAi -> R.string.azure_openai_name
+    ApiType.OpenAi -> R.string.openai_name
+    ApiType.Claude -> R.string.claude_name
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +57,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = stringResource(ApiTypeNames.getValue(settings.apiType)),
+                value = stringResource(getApiTypeName(settings.apiType)),
                 onValueChange = {},
                 readOnly = true,
                 label = { Text(stringResource(R.string.settings_api_type)) },
@@ -68,9 +70,9 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                ApiTypeNames.forEach { (type, name) ->
+                ApiType.entries.forEach { type ->
                     DropdownMenuItem(
-                        text = { Text(stringResource(name)) },
+                        text = { Text(stringResource(getApiTypeName(type))) },
                         onClick = {
                             viewModel.updateApiType(type)
                             expanded = false
@@ -87,6 +89,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
                 onValueChange = viewModel::updateApiConfig
             )
             is OpenAIConfig -> OpenAIConfigFields(
+                config = config,
+                onValueChange = viewModel::updateApiConfig
+            )
+            is ClaudeConfig -> ClaudeConfigFields(
                 config = config,
                 onValueChange = viewModel::updateApiConfig
             )

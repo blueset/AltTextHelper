@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import studio1a23.altTextAi.SettingsDataStore.getSettings
 import studio1a23.altTextAi.api.azureOpenApiComplete
+import studio1a23.altTextAi.api.claudeComplete
 import studio1a23.altTextAi.api.openApiComplete
 import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
@@ -52,6 +53,7 @@ class ShareReceiverViewModel : ViewModel() {
                         val result = when (val config = settings.activeConfig) {
                             is AzureOpenAIConfig -> azureOpenApiComplete(config, base64Image, presetPrompt, context)
                             is OpenAIConfig -> openApiComplete(config, base64Image, presetPrompt, context)
+                            is ClaudeConfig -> claudeComplete(config, base64Image, presetPrompt, context)
                         }
                         when {
                             result.isSuccess -> {

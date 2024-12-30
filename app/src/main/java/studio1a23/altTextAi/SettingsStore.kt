@@ -15,6 +15,7 @@ sealed interface ApiConfig {
         fun fromApiType(type: ApiType, configs: ApiConfigs): ApiConfig = when (type) {
             ApiType.AzureOpenAi -> configs.azure
             ApiType.OpenAi -> configs.openai
+            ApiType.Claude -> configs.claude
         }
     }
 }
@@ -35,14 +36,22 @@ data class OpenAIConfig(
 ) : ApiConfig
 
 @Serializable
+data class ClaudeConfig(
+    val apiKey: String,
+    val model: String = "claude-3-5-sonnet-latest",
+) : ApiConfig
+
+@Serializable
 data class ApiConfigs(
     val azure: AzureOpenAIConfig = AzureOpenAIConfig("", "", ""),
-    val openai: OpenAIConfig = OpenAIConfig("")
+    val openai: OpenAIConfig = OpenAIConfig(""),
+    val claude: ClaudeConfig = ClaudeConfig("")
 )
 
 enum class ApiType {
     AzureOpenAi,
-    OpenAi;
+    OpenAi,
+    Claude;
 
     companion object {
         fun fromString(value: String?): ApiType {
