@@ -31,4 +31,7 @@
     <string name="gemini_name">Gemini</string>
     <string name="openai_compatible_base_url">Base URL</string>
     <string name="openai_compatible_name">OpenAI-compatible API</string>
+    <string name="button_update">Update</string>
+    <string name="incomplete_configuration_prompt">API config is incomplete. Please enter your API details in Settings.</string>
+    <string name="no_preset_prompt">You can set a default prompt for generating alt text.</string>
 </resources>

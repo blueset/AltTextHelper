@@ -21,10 +21,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,11 +39,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            AltTextHelperTheme {
-                MainScreen()
-            }
-        }
+        setContent { AltTextHelperTheme { MainScreen() } }
     }
 }
 
@@ -53,48 +51,57 @@ fun MainScreen() {
     val settingsTitle = stringResource(R.string.title_settings)
     val (title, setTitle) = remember { mutableStateOf(baseTitle) }
     val (canPop, setCanPop) = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val activity = context as? ComponentActivity
+        val navigateTo = activity?.intent?.getStringExtra("navigate_to")
+        if (navigateTo == "settings") {
+            navController.navigate("settings")
+        }
+    }
+
     navController.addOnDestinationChangedListener { controller, _, _ ->
         setCanPop(controller.previousBackStackEntry != null)
         setTitle(
-            when (controller.currentBackStackEntry?.destination?.route) {
-                "home" -> baseTitle
-                "settings" -> settingsTitle
-                else -> baseTitle
-            }
+                when (controller.currentBackStackEntry?.destination?.route) {
+                    "home" -> baseTitle
+                    "settings" -> settingsTitle
+                    else -> baseTitle
+                }
         )
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    if (canPop) {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(
-                                    R.string.button_back
-                                )
-                            )
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                        title = { Text(title) },
+                        navigationIcon = {
+                            if (canPop) {
+                                IconButton(onClick = { navController.popBackStack() }) {
+                                    Icon(
+                                            Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription =
+                                                    stringResource(R.string.button_back)
+                                    )
+                                }
+                            }
+                        },
+                        actions = {
+                            if (!canPop) {
+                                IconButton(onClick = { navController.navigate("settings") }) {
+                                    Icon(Icons.Default.Settings, contentDescription = settingsTitle)
+                                }
+                            }
                         }
-                    }
-                },
-                actions = {
-                    if (!canPop) {
-                        IconButton(onClick = { navController.navigate("settings") }) {
-                            Icon(Icons.Default.Settings, contentDescription = settingsTitle)
-                        }
-                    }
-                }
-            )
-        }
+                )
+            }
     ) { paddingValues ->
         NavHost(
-            navController = navController,
-            startDestination = "home",
-            modifier = Modifier.padding(paddingValues)
+                navController = navController,
+                startDestination = "home",
+                modifier = Modifier.padding(paddingValues)
         ) {
             composable("home") { HomeContent() }
             composable("settings") { SettingsScreen() }
@@ -105,22 +112,20 @@ fun MainScreen() {
 @Composable
 fun HomeContent() {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Welcome to My App!",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
+                text = "Welcome to My App!",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "To use this app, share images to it from your gallery or camera apps.",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
+                text = "To use this app, share images to it from your gallery or camera apps.",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
         )
     }
 }

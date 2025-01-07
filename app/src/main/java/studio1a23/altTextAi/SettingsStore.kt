@@ -20,6 +20,8 @@ sealed interface ApiConfig {
             ApiType.OpenAiCompatible -> configs.openaiCompatible
         }
     }
+
+    val isFilled: Boolean
 }
 
 @Serializable
@@ -28,14 +30,20 @@ data class AzureOpenAIConfig(
     val resourceName: String,
     val deploymentId: String,
     val model: String = "gpt-4o",
-) : ApiConfig
+) : ApiConfig {
+    override val isFilled: Boolean
+        get() = apiKey.isNotEmpty() || resourceName.isNotEmpty() || deploymentId.isNotEmpty()
+}
 
 @Serializable
 data class OpenAIConfig(
     val apiKey: String,
     val organization: String = "", // Optional
     val model: String = "gpt-4o",
-) : ApiConfig
+) : ApiConfig {
+    override val isFilled: Boolean
+        get() = apiKey.isNotEmpty() || model.isNotEmpty()
+}
 
 @Serializable
 data class OpenAICompatibleConfig(
@@ -45,19 +53,27 @@ data class OpenAICompatibleConfig(
 ) : ApiConfig {
     val baseUrlWithSlash: String
         get() = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
+    override val isFilled: Boolean
+        get() = apiKey.isNotEmpty() || baseUrl.isNotEmpty() || model.isNotEmpty()
 }
 
 @Serializable
 data class ClaudeConfig(
     val apiKey: String,
     val model: String = "claude-3-5-sonnet-latest",
-) : ApiConfig
+) : ApiConfig {
+    override val isFilled: Boolean
+        get() = apiKey.isNotEmpty() || model.isNotEmpty()
+}
 
 @Serializable
 data class GeminiConfig(
     val apiKey: String,
     val model: String = "gemini-2.0-flash-exp",
-) : ApiConfig
+) : ApiConfig {
+    override val isFilled: Boolean
+        get() = apiKey.isNotEmpty() || model.isNotEmpty()
+}
 
 @Serializable
 data class ApiConfigs(

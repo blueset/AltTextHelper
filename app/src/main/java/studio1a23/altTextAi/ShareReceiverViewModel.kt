@@ -12,6 +12,9 @@ import androidx.lifecycle.viewModelScope
 import coil.imageLoader
 import coil.request.ImageRequest.Builder
 import coil.request.SuccessResult
+import java.io.ByteArrayOutputStream
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -21,9 +24,6 @@ import studio1a23.altTextAi.api.claudeComplete
 import studio1a23.altTextAi.api.geminiComplete
 import studio1a23.altTextAi.api.openApiCompatibleComplete
 import studio1a23.altTextAi.api.openApiComplete
-import java.io.ByteArrayOutputStream
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 sealed class UiState {
     data object Loading : UiState()
@@ -53,23 +53,55 @@ class ShareReceiverViewModel : ViewModel() {
                             _prompt.value = settings.presetPrompt
                         }
                         val presetPrompt = _prompt.value
-                        val result = when (val config = settings.activeConfig) {
-                            is AzureOpenAIConfig -> azureOpenApiComplete(config, base64Image, presetPrompt, context)
-                            is OpenAIConfig -> openApiComplete(config, base64Image, presetPrompt, context)
-                            is ClaudeConfig -> claudeComplete(config, base64Image, presetPrompt, context)
-                            is GeminiConfig -> geminiComplete(config, bitmapImage, presetPrompt, context)
-                            is OpenAICompatibleConfig -> openApiCompatibleComplete(config, base64Image, presetPrompt, context)
-                        }
+                        val result =
+                                when (val config = settings.activeConfig) {
+                                    is AzureOpenAIConfig ->
+                                            azureOpenApiComplete(
+                                                    config,
+                                                    base64Image,
+                                                    presetPrompt,
+                                                    context
+                                            )
+                                    is OpenAIConfig ->
+                                            openApiComplete(
+                                                    config,
+                                                    base64Image,
+                                                    presetPrompt,
+                                                    context
+                                            )
+                                    is ClaudeConfig ->
+                                            claudeComplete(
+                                                    config,
+                                                    base64Image,
+                                                    presetPrompt,
+                                                    context
+                                            )
+                                    is GeminiConfig ->
+                                            geminiComplete(
+                                                    config,
+                                                    bitmapImage,
+                                                    presetPrompt,
+                                                    context
+                                            )
+                                    is OpenAICompatibleConfig ->
+                                            openApiCompatibleComplete(
+                                                    config,
+                                                    base64Image,
+                                                    presetPrompt,
+                                                    context
+                                            )
+                                }
                         when {
                             result.isSuccess -> {
                                 resultText = result.getOrThrow()
                                 _uiState.value = UiState.Success(result.getOrThrow())
                             }
-
                             result.isFailure -> {
-                                _uiState.value = UiState.Error(
-                                    result.exceptionOrNull() ?: Exception("Unknown exception")
-                                )
+                                _uiState.value =
+                                        UiState.Error(
+                                                result.exceptionOrNull()
+                                                        ?: Exception("Unknown exception")
+                                        )
                             }
                         }
                     } catch (e: NotImplementedError) {
@@ -100,14 +132,9 @@ class ShareReceiverViewModel : ViewModel() {
 
 suspend fun loadImageAsBitmap(context: Context, imageUri: Uri): Bitmap? {
     val loader = context.imageLoader
-    val request = Builder(context)
-        .data(imageUri)
-        .allowHardware(false)
-        .build()
+    val request = Builder(context).data(imageUri).allowHardware(false).build()
     val result = (loader.execute(request) as? SuccessResult)?.drawable
-    return result?.let { drawable ->
-        (drawable as BitmapDrawable).bitmap
-    }
+    return result?.let { drawable -> (drawable as BitmapDrawable).bitmap }
 }
 
 @OptIn(ExperimentalEncodingApi::class)
