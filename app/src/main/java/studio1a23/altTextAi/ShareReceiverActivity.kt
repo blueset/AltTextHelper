@@ -169,7 +169,7 @@ fun ShareReceiverScreen(imageUri: Uri) {
                                 ErrorDialog(
                                     errorMessage = (uiState as UiState.Error).exception.message
                                         ?: stringResource(R.string.unknown_error),
-                                    onRetry = { viewModel.retry(context, imageUri) },
+                                    onRetry = { viewModel.processImage(context, imageUri) },
                                 )
                             }
                         }
@@ -183,16 +183,23 @@ fun ShareReceiverScreen(imageUri: Uri) {
                         value = prompt,
                         onValueChange = { viewModel.updatePrompt(it) },
                         label = { Text(stringResource(R.string.input_prompt)) },
-                        enabled = uiState !== UiState.Loading && !invalidConfig
+                        enabled = uiState !is UiState.Loading && !invalidConfig
                     )
-                    FilledTonalButton(
-                        modifier = Modifier.align(Alignment.End),
-                        onClick = { viewModel.processImage(context, imageUri) },
-                        enabled =
-                        uiState !== UiState.Loading &&
-                                !invalidConfig &&
-                                !prompt.isBlank()
-                    ) { Text(stringResource(R.string.button_update)) }
+                    if (uiState is UiState.Loading) {
+                        FilledTonalButton(
+                            modifier = Modifier.align(Alignment.End),
+                            onClick = { viewModel.cancelProcessing() },
+                        ) { Text(stringResource(R.string.button_cancel)) }
+                    } else {
+                        FilledTonalButton(
+                            modifier = Modifier.align(Alignment.End),
+                            onClick = { viewModel.processImage(context, imageUri) },
+                            enabled =
+                            uiState !== UiState.Loading &&
+                                    !invalidConfig &&
+                                    prompt.isNotBlank()
+                        ) { Text(stringResource(R.string.button_update)) }
+                    }
                 }
             }
         }

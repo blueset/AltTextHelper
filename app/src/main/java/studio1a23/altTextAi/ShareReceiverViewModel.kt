@@ -36,82 +36,95 @@ class ShareReceiverViewModel : ViewModel() {
     val uiState: StateFlow<UiState> = _uiState
 
     private var resultText: String = ""
+    private var currentJob: kotlinx.coroutines.Job? = null
 
     private val _prompt = MutableStateFlow("")
     val prompt: StateFlow<String> = _prompt
 
+    fun cancelProcessing() {
+        currentJob?.cancel()
+        _uiState.value = UiState.Error(Exception("Request cancelled"))
+    }
+
     fun processImage(context: Context, imageUri: Uri) {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            val bitmapImage = loadImageAsBitmap(context, imageUri)
-            if (bitmapImage != null) {
-                val base64Image by lazy { bitmapImage.toPngBase64() }
-                // Fetch settings from preferences
-                getSettings(context).collect { settings ->
-                    try {
-                        if (_prompt.value.isBlank()) {
-                            _prompt.value = settings.presetPrompt
-                        }
-                        val presetPrompt = _prompt.value
-                        val result =
+        currentJob?.cancel()
+        currentJob =
+            viewModelScope.launch {
+                _uiState.value = UiState.Loading
+                val bitmapImage = loadImageAsBitmap(context, imageUri)
+                if (bitmapImage != null) {
+                    val base64Image by lazy { bitmapImage.toPngBase64() }
+                    // Fetch settings from preferences
+                    getSettings(context).collect { settings ->
+                        try {
+                            if (_prompt.value.isBlank()) {
+                                _prompt.value = settings.presetPrompt
+                            }
+                            val presetPrompt = _prompt.value
+                            val result =
                                 when (val config = settings.activeConfig) {
                                     is AzureOpenAIConfig ->
-                                            azureOpenApiComplete(
-                                                    config,
-                                                    base64Image,
-                                                    presetPrompt,
-                                                    context
-                                            )
-                                    is OpenAIConfig ->
-                                            openApiComplete(
-                                                    config,
-                                                    base64Image,
-                                                    presetPrompt,
-                                                    context
-                                            )
-                                    is ClaudeConfig ->
-                                            claudeComplete(
-                                                    config,
-                                                    base64Image,
-                                                    presetPrompt,
-                                                    context
-                                            )
-                                    is GeminiConfig ->
-                                            geminiComplete(
-                                                    config,
-                                                    bitmapImage,
-                                                    presetPrompt,
-                                                    context
-                                            )
-                                    is OpenAICompatibleConfig ->
-                                            openApiCompatibleComplete(
-                                                    config,
-                                                    base64Image,
-                                                    presetPrompt,
-                                                    context
-                                            )
-                                }
-                        when {
-                            result.isSuccess -> {
-                                resultText = result.getOrThrow()
-                                _uiState.value = UiState.Success(result.getOrThrow())
-                            }
-                            result.isFailure -> {
-                                _uiState.value =
-                                        UiState.Error(
-                                                result.exceptionOrNull()
-                                                        ?: Exception("Unknown exception")
+                                        azureOpenApiComplete(
+                                            config,
+                                            base64Image,
+                                            presetPrompt,
+                                            context
                                         )
+
+                                    is OpenAIConfig ->
+                                        openApiComplete(
+                                            config,
+                                            base64Image,
+                                            presetPrompt,
+                                            context
+                                        )
+
+                                    is ClaudeConfig ->
+                                        claudeComplete(
+                                            config,
+                                            base64Image,
+                                            presetPrompt,
+                                            context
+                                        )
+
+                                    is GeminiConfig ->
+                                        geminiComplete(
+                                            config,
+                                            bitmapImage,
+                                            presetPrompt,
+                                            context
+                                        )
+
+                                    is OpenAICompatibleConfig ->
+                                        openApiCompatibleComplete(
+                                            config,
+                                            base64Image,
+                                            presetPrompt,
+                                            context
+                                        )
+                                }
+                            when {
+                                result.isSuccess -> {
+                                    resultText = result.getOrThrow()
+                                    _uiState.value = UiState.Success(result.getOrThrow())
+                                }
+
+                                result.isFailure -> {
+                                    _uiState.value =
+                                        UiState.Error(
+                                            result.exceptionOrNull()
+                                                ?: Exception("Unknown exception")
+                                        )
+                                }
                             }
+                        } catch (e: NotImplementedError) {
+                            _uiState.value = UiState.Error(e)
                         }
-                    } catch (e: NotImplementedError) {
-                        _uiState.value = UiState.Error(e)
                     }
+                } else {
+                    _uiState.value = UiState.Error(Exception("Failed to load image"))
                 }
-            } else {
-                _uiState.value = UiState.Error(Exception("Failed to load image"))
             }
-        }
     }
 
     fun updatePrompt(newPrompt: String) {
@@ -123,10 +136,6 @@ class ShareReceiverViewModel : ViewModel() {
         val clip = newPlainText("Result", resultText)
         clipboard.setPrimaryClip(clip)
         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
-    }
-
-    fun retry(context: Context, imageUri: Uri) {
-        processImage(context, imageUri)
     }
 }
 
