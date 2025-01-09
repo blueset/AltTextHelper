@@ -49,4 +49,5 @@
     <string name="step_state_completed">completed</string>
     <string name="step_state_active">active</string>
     <string name="step_state_upcoming">upcoming</string>
+    <string name="settings_preset_prompt_help">Default prompt text supplied to the AI model for ALT text generation.</string>
 </resources>

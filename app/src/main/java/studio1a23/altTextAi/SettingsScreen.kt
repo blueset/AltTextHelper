@@ -59,7 +59,8 @@ fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
                 value = settings.presetPrompt,
                 onValueChange = { viewModel.updatePresetPrompt(it) },
                 label = { Text(stringResource(R.string.settings_preset_prompt)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                supportingText = { Text(stringResource(R.string.settings_preset_prompt_help)) }
             )
 
             // API Type Selection
