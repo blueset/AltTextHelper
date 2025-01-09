@@ -12,10 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import studio1a23.altTextAi.R
 
 enum class StepState {
     Active,
@@ -45,6 +47,12 @@ fun StepItem(
             MaterialTheme.colorScheme.primary
         StepState.Upcoming -> MaterialTheme.colorScheme.primaryContainer
     }
+    val stageDescription = stringResource(R.string.step_content_description, stepNumber, when(state) {
+        StepState.Fail -> R.string.step_state_failed
+        StepState.Success -> R.string.step_state_completed
+        StepState.Active -> R.string.step_state_active
+        StepState.Upcoming -> R.string.step_state_upcoming
+    })
 
     Row(
         modifier = Modifier
@@ -66,7 +74,7 @@ fun StepItem(
                     .size(28.dp)
                     .align(Alignment.CenterHorizontally)
                     .semantics {
-                        contentDescription = "Step $stepNumber: ${state.name}, $circleColor"
+                        contentDescription = stageDescription
                     }
             ) {
                 Box(contentAlignment = Alignment.Center) {

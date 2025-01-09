@@ -135,7 +135,7 @@ object SettingsDataStore {
             Settings.build(
                 configs = configs,
                 apiType = apiType,
-                presetPrompt = preferences[PRESET_PROMPT]
+                presetPrompt = preferences[PRESET_PROMPT] ?: context.getString(R.string.default_prompt_text)
             )
         }
     }
