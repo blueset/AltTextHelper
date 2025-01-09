@@ -34,5 +34,12 @@
     <string name="button_update">Update</string>
     <string name="incomplete_configuration_prompt">API config is incomplete. Please enter your API details in Settings.</string>
     <string name="no_preset_prompt">You can set a default prompt for generating alt text.</string>
-    <string name="button_cancel">Cancel\n</string>
+    <string name="button_cancel">Cancel</string>
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="guide_set_up">Set up %1$s</string>
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="guide_set_up_body_text">%1$s generates descriptive alt text for your images using AI. To use this app, you’ll need to provide your own API key from one of our supported services:\n\n- OpenAI (GPT-4 Vision and others)\n- Anthropic Claude\n- Google Gemini\n- Any OpenAI-compatible API\n\nTo get started, go to Settings and configure your preferred API service with your API key. You can also set a default prompt to customize how the alt text is generated.</string>
+    <string name="guide_generate">Generate alt text from images</string>
+    <string name="guide_generate_description">Share a photo from any app to generate alt text, or choose a picture using the button below.</string>
+    <string name="button_pick_a_picture">Pick a picture</string>
 </resources>

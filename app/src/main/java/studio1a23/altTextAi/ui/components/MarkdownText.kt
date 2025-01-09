@@ -7,8 +7,10 @@ import android.view.ViewTreeObserver
 import android.widget.TextView
 import androidx.annotation.FontRes
 import androidx.annotation.IdRes
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.remember
@@ -23,12 +25,15 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import ca.blarg.prism4j.languages.Prism4jGrammarLocator
+import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin
+import io.noties.markwon.core.MarkwonTheme
 import io.noties.markwon.html.HtmlPlugin
 import io.noties.markwon.syntax.Prism4jThemeDefault
 import io.noties.markwon.syntax.SyntaxHighlightPlugin
 import io.noties.prism4j.Prism4j
+
 
 @Composable
 @NonRestartableComposable
@@ -46,7 +51,8 @@ fun MarkdownText(
 ) {
     val defaultColor: Color = LocalContentColor.current
     val context: Context = LocalContext.current
-    val markdownRender: Markwon = remember { createMarkdownRender(context) }
+    val colorScheme = MaterialTheme.colorScheme
+    val markdownRender: Markwon = remember { createMarkdownRender(context, colorScheme) }
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
@@ -131,11 +137,19 @@ private fun createTextView(
     }
 }
 
-internal fun createMarkdownRender(context: Context): Markwon {
+internal fun createMarkdownRender(context: Context, colorScheme: ColorScheme): Markwon {
     val prism4j = Prism4j(Prism4jGrammarLocator())
     return Markwon.builder(context)
         .usePlugin(SoftBreakAddsNewLinePlugin.create())
         .usePlugin(HtmlPlugin.create())
         .usePlugin(SyntaxHighlightPlugin.create(prism4j, Prism4jThemeDefault.create()))
+        .usePlugin(
+            object : AbstractMarkwonPlugin() {
+                override fun configureTheme(builder: MarkwonTheme.Builder) {
+                    builder
+                        .listItemColor(colorScheme.onBackground.copy(alpha=0.25f).toArgb())
+                }
+            }
+        )
         .build()
 }
