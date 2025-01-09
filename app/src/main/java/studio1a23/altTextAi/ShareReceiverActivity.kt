@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,15 +28,20 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -40,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
+import kotlinx.coroutines.launch
 import studio1a23.altTextAi.SettingsDataStore.getSettings
 import studio1a23.altTextAi.ui.theme.AltTextHelperTheme
 
@@ -72,12 +82,16 @@ class ShareReceiverActivity : ComponentActivity() {
 @Composable
 fun ShareReceiverScreen(imageUri: Uri) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val viewModel: ShareReceiverViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     val prompt by viewModel.prompt.collectAsState()
     val settings by getSettings(context).collectAsState(null)
     val invalidConfig = settings?.activeConfig?.isFilled == false
     val noAutoStart = invalidConfig || settings?.presetPrompt?.isBlank() == true
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarCopiedToClipboard = stringResource(R.string.snackbar_copied_to_clipboard)
+    val buttonDismiss = stringResource(R.string.button_dismiss)
 
     LaunchedEffect(imageUri, noAutoStart) {
         if (!noAutoStart) {
@@ -87,19 +101,27 @@ fun ShareReceiverScreen(imageUri: Uri) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.title_generate_alt_text)) })
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(verticalAlignment = Alignment.Top) {
                 AsyncImage(
-                    model = Builder(context).data(imageUri).crossfade(true).build(),
+                    model = Builder(context)
+                        .data(imageUri)
+                        .crossfade(true)
+                        .placeholder(R.drawable.baseline_loop_24)
+                        .error(R.drawable.baseline_error_outline_24)
+                        .fallback(R.drawable.outline_scan_delete_24)
+                        .build(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier =
@@ -161,7 +183,15 @@ fun ShareReceiverScreen(imageUri: Uri) {
                             is UiState.Success -> {
                                 ResultDialog(
                                     resultText = (uiState as UiState.Success).data,
-                                    onCopy = { viewModel.copyToClipboard(context) },
+                                    onCopy = {
+                                        viewModel.copyToClipboard(context)
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                message = snackbarCopiedToClipboard,
+                                                actionLabel = buttonDismiss
+                                            )
+                                        }
+                                    },
                                 )
                             }
 
@@ -188,7 +218,7 @@ fun ShareReceiverScreen(imageUri: Uri) {
                     if (uiState is UiState.Loading) {
                         FilledTonalButton(
                             modifier = Modifier.align(Alignment.End),
-                            onClick = { viewModel.cancelProcessing() },
+                            onClick = { viewModel.cancelProcessing(context) },
                         ) { Text(stringResource(R.string.button_cancel)) }
                     } else {
                         FilledTonalButton(

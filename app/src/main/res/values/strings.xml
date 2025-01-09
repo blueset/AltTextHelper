@@ -40,7 +40,7 @@
     <!-- TRANSLATORS: %1$s is the name of the app -->
     <string name="guide_set_up_body_text">%1$s generates descriptive alt text for your images using AI. To use this app, you’ll need to provide your own API key from one of our supported services:\n\n- OpenAI (GPT-4 Vision and others)\n- Anthropic Claude\n- Google Gemini\n- Any OpenAI-compatible API\n\nTo get started, go to Settings and configure your preferred API service with your API key. You can also set a default prompt to customize how the alt text is generated.</string>
     <string name="guide_generate">Generate alt text from images</string>
-    <string name="guide_generate_description">Share a photo from any app to generate alt text, or choose a picture using the button below.</string>
+    <string name="guide_generate_description">Share a picture from any app to generate alt text, or pick a picture from your gallery.</string>
     <string name="button_pick_a_picture">Pick a picture</string>
     <string name="default_prompt_text">Write an ALT text for the picture for use on social media. Include any text found inside.</string>
     <!-- TRANSLATORS: %1$s is the number of the step, %2$s is the state of the step, one of step_state_failed, step_state_completed, step_state_active, or step_state_upcoming. -->
@@ -50,4 +50,11 @@
     <string name="step_state_active">active</string>
     <string name="step_state_upcoming">upcoming</string>
     <string name="settings_preset_prompt_help">Default prompt text supplied to the AI model for ALT text generation.</string>
+    <string name="snackbar_settings_saved">Settings saved</string>
+    <string name="button_dismiss">Dismiss</string>
+    <string name="error_failed_to_load_image">Failed to load image</string>
+    <string name="title_result">Result</string>
+    <string name="snackbar_copied_to_clipboard">Copied to clipboard</string>
+    <string name="unknown_exception">Unknown exception</string>
+    <string name="request_cancelled">Request cancelled</string>
 </resources>

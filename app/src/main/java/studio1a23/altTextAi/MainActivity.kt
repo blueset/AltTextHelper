@@ -19,6 +19,8 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -48,15 +51,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val pickImage =
-            registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-                if (uri != null) {
-                    val intent =
-                        Intent(this, ShareReceiverActivity::class.java).apply {
-                            putExtra(Intent.EXTRA_STREAM, uri)
-                        }
-                    startActivity(intent)
+                registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+                    if (uri != null) {
+                        val intent =
+                                Intent(this, ShareReceiverActivity::class.java).apply {
+                                    putExtra(Intent.EXTRA_STREAM, uri)
+                                }
+                        startActivity(intent)
+                    }
                 }
-            }
 
         setContent {
             AltTextHelperTheme { MainScreen(onPickImage = { pickImage.launch("image/*") }) }
@@ -72,6 +75,7 @@ fun MainScreen(onPickImage: () -> Unit) {
     val settingsTitle = stringResource(R.string.title_settings)
     val (title, setTitle) = remember { mutableStateOf(baseTitle) }
     val (canPop, setCanPop) = remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -85,52 +89,53 @@ fun MainScreen(onPickImage: () -> Unit) {
     navController.addOnDestinationChangedListener { controller, _, _ ->
         setCanPop(controller.previousBackStackEntry != null)
         setTitle(
-            when (controller.currentBackStackEntry?.destination?.route) {
-                "home" -> baseTitle
-                "settings" -> settingsTitle
-                else -> baseTitle
-            }
+                when (controller.currentBackStackEntry?.destination?.route) {
+                    "home" -> baseTitle
+                    "settings" -> settingsTitle
+                    else -> baseTitle
+                }
         )
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    if (canPop) {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription =
-                                stringResource(R.string.button_back)
-                            )
+            modifier = Modifier.fillMaxSize(),
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            topBar = {
+                TopAppBar(
+                        title = { Text(title) },
+                        navigationIcon = {
+                            if (canPop) {
+                                IconButton(onClick = { navController.popBackStack() }) {
+                                    Icon(
+                                            Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription =
+                                                    stringResource(R.string.button_back)
+                                    )
+                                }
+                            }
+                        },
+                        actions = {
+                            if (!canPop) {
+                                IconButton(onClick = { navController.navigate("settings") }) {
+                                    Icon(Icons.Default.Settings, contentDescription = settingsTitle)
+                                }
+                            }
                         }
-                    }
-                },
-                actions = {
-                    if (!canPop) {
-                        IconButton(onClick = { navController.navigate("settings") }) {
-                            Icon(Icons.Default.Settings, contentDescription = settingsTitle)
-                        }
-                    }
-                }
-            )
-        }
+                )
+            }
     ) { paddingValues ->
         NavHost(
-            navController = navController,
-            startDestination = "home",
-            modifier = Modifier.padding(paddingValues)
+                navController = navController,
+                startDestination = "home",
+                modifier = Modifier.padding(paddingValues)
         ) {
             composable("home") {
                 HomeContent(
-                    onSettings = { navController.navigate("settings") },
-                    onPickImage = onPickImage
+                        onSettings = { navController.navigate("settings") },
+                        onPickImage = onPickImage
                 )
             }
-            composable("settings") { SettingsScreen() }
+            composable("settings") { SettingsScreen(snackbarHostState = snackbarHostState) }
         }
     }
 }
@@ -141,51 +146,40 @@ fun HomeContent(onSettings: () -> Unit, onPickImage: () -> Unit) {
     val settings by getSettings(context).collectAsState(null)
     val invalidConfig = settings?.activeConfig?.isFilled != true
 
-    VerticalStepper(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
+    VerticalStepper(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         StepItem(
-            title = {
-                Text(
-                    stringResource(
-                        R.string.guide_set_up,
-                        stringResource(R.string.app_name)
-                    )
-                )
-            },
-            state = if (!invalidConfig) StepState.Success else StepState.Active,
-            stepNumber = 1,
-            content = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    MarkdownText(
-                        stringResource(
-                            R.string.guide_set_up_body_text,
-                            stringResource(R.string.app_name)
+                title = {
+                    Text(stringResource(R.string.guide_set_up, stringResource(R.string.app_name)))
+                },
+                state = if (!invalidConfig) StepState.Success else StepState.Active,
+                stepNumber = 1,
+                content = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        MarkdownText(
+                                stringResource(
+                                        R.string.guide_set_up_body_text,
+                                        stringResource(R.string.app_name)
+                                )
                         )
-                    )
-                    FilledTonalButton(
-                        onClick = onSettings
-                    ) { Text(stringResource(R.string.title_settings)) }
+                        FilledTonalButton(onClick = onSettings) {
+                            Text(stringResource(R.string.title_settings))
+                        }
+                    }
                 }
-            }
         )
 
         StepItem(
-            title = { Text(stringResource(R.string.guide_generate)) },
-            state = if (!invalidConfig) StepState.Active else StepState.Upcoming,
-            stepNumber = 2,
-            content = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        context.getString(R.string.guide_generate_description)
-                    )
-                    FilledTonalButton(onClick = onPickImage, enabled = !invalidConfig) {
-                        Text(stringResource(R.string.button_pick_a_picture))
+                title = { Text(stringResource(R.string.guide_generate)) },
+                state = if (!invalidConfig) StepState.Active else StepState.Upcoming,
+                stepNumber = 2,
+                content = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(context.getString(R.string.guide_generate_description))
+                        FilledTonalButton(onClick = onPickImage, enabled = !invalidConfig) {
+                            Text(stringResource(R.string.button_pick_a_picture))
+                        }
                     }
                 }
-            }
         )
     }
 }

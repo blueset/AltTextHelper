@@ -12,9 +12,6 @@ import androidx.lifecycle.viewModelScope
 import coil.imageLoader
 import coil.request.ImageRequest.Builder
 import coil.request.SuccessResult
-import java.io.ByteArrayOutputStream
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,6 +21,9 @@ import studio1a23.altTextAi.api.claudeComplete
 import studio1a23.altTextAi.api.geminiComplete
 import studio1a23.altTextAi.api.openApiCompatibleComplete
 import studio1a23.altTextAi.api.openApiComplete
+import java.io.ByteArrayOutputStream
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 sealed class UiState {
     data object Loading : UiState()
@@ -41,9 +41,9 @@ class ShareReceiverViewModel : ViewModel() {
     private val _prompt = MutableStateFlow("")
     val prompt: StateFlow<String> = _prompt
 
-    fun cancelProcessing() {
+    fun cancelProcessing(context: Context) {
         currentJob?.cancel()
-        _uiState.value = UiState.Error(Exception("Request cancelled"))
+        _uiState.value = UiState.Error(Exception(context.getString(R.string.request_cancelled)))
     }
 
     fun processImage(context: Context, imageUri: Uri) {
@@ -113,7 +113,7 @@ class ShareReceiverViewModel : ViewModel() {
                                     _uiState.value =
                                         UiState.Error(
                                             result.exceptionOrNull()
-                                                ?: Exception("Unknown exception")
+                                                ?: Exception(context.getString(R.string.unknown_exception))
                                         )
                                 }
                             }
@@ -122,7 +122,7 @@ class ShareReceiverViewModel : ViewModel() {
                         }
                     }
                 } else {
-                    _uiState.value = UiState.Error(Exception("Failed to load image"))
+                    _uiState.value = UiState.Error(Exception(context.getString(R.string.error_failed_to_load_image)))
                 }
             }
     }
@@ -133,9 +133,8 @@ class ShareReceiverViewModel : ViewModel() {
 
     fun copyToClipboard(context: Context) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = newPlainText("Result", resultText)
+        val clip = newPlainText(context.getString(R.string.title_result), resultText)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
     }
 }
 
