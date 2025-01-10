@@ -19,8 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,7 +39,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -145,7 +142,7 @@ fun ShareReceiverScreen(imageUri: Uri) {
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = stringResource(R.string.loading),
+                                text = stringResource(R.string.generating),
                             )
                         }
                     } else if (invalidConfig || noAutoStart) {
@@ -267,5 +264,5 @@ fun LoadingDialog() {
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
-    ) { Text(stringResource(R.string.loading), style = MaterialTheme.typography.titleLarge) }
+    ) { Text(stringResource(R.string.generating), style = MaterialTheme.typography.titleLarge) }
 }

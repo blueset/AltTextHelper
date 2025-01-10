@@ -19,22 +19,26 @@ suspend fun geminiComplete(
         return Result.failure(IllegalArgumentException(context.getString(R.string.incomplete_configuration)))
     }
 
-    val model = GenerativeModel(
-        modelName = config.model,
-        apiKey = config.apiKey,
-        generationConfig = generationConfig {
-            maxOutputTokens = MAX_TOKENS
+    try {
+        val model = GenerativeModel(
+            modelName = config.model,
+            apiKey = config.apiKey,
+            generationConfig = generationConfig {
+                maxOutputTokens = MAX_TOKENS
+            }
+        )
+
+        val result = model.generateContent(content {
+            image(imageBitmap)
+            text(presetPrompt)
+        })
+
+        return if (result.text == null || result.text!!.isBlank()) {
+            Result.failure(Exception(context.getString(R.string.error_no_response)))
+        } else {
+            Result.success(result.text!!)
         }
-    )
-
-    val result = model.generateContent(content {
-        image(imageBitmap)
-        text(presetPrompt)
-    })
-
-    return if (result.text == null || result.text!!.isBlank()) {
-        Result.failure(Exception(context.getString(R.string.error_no_response)))
-    } else {
-        Result.success(result.text!!)
+    } catch (e: Exception) {
+        return Result.failure(e)
     }
 }

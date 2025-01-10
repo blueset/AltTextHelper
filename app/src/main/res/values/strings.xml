@@ -25,7 +25,7 @@
     <string name="input_prompt">Prompt</string>
     <string name="button_copy_to_clipboard">Copy to Clipboard</string>
     <string name="button_retry">Retry</string>
-    <string name="loading">Loading…</string>
+    <string name="generating">Generating…</string>
     <string name="error_no_response">No response</string>
     <string name="claude_name">Anthropic Claude</string>
     <string name="gemini_name">Gemini</string>
