@@ -1,64 +1,66 @@
 package studio1a23.altTextAi.api
 
 import android.content.Context
-import com.google.gson.annotations.SerializedName
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.POST
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import studio1a23.altTextAi.ClaudeConfig
 import studio1a23.altTextAi.MAX_TOKENS
 import studio1a23.altTextAi.R
-import java.util.concurrent.TimeUnit
 
 private const val CLAUDE_API_URL = "https://api.anthropic.com/v1/"
 
-data class ClaudeMessage(
+@Serializable
+private data class ClaudeMessage(
     val role: String,
     val content: List<ClaudeContent>
 )
 
+@Serializable
 sealed class ClaudeContent {
+    @Serializable
+    @SerialName("text")
     data class Text(
         val type: String = "text",
         val text: String
     ) : ClaudeContent()
 
+    @Serializable
+    @SerialName("image")
     data class Image(
         val type: String = "image",
         val source: ImageSource
     ) : ClaudeContent()
 }
 
+@Serializable
 data class ImageSource(
     val type: String = "base64",
-    @SerializedName("media_type")
+    @SerialName("media_type")
     val mediaType: String = "image/png",
     val data: String
 )
 
-data class ClaudeRequest(
+@Serializable
+private data class ClaudeRequest(
     val model: String = "claude-3-5-sonnet-latest",
-    @SerializedName("max_tokens")
+    @SerialName("max_tokens")
     val maxTokens: Int = MAX_TOKENS,
     val messages: List<ClaudeMessage>
 )
 
-data class ClaudeResponse(
+@Serializable
+private data class ClaudeResponse(
     val content: List<ClaudeContent>
 )
-
-interface ClaudeApi {
-    @POST("messages")
-    suspend fun complete(
-        @Header("x-api-key") apiKey: String,
-        @Header("anthropic-version") version: String = "2023-06-01",
-        @Body request: ClaudeRequest
-    ): ClaudeResponse
-}
 
 suspend fun claudeComplete(
     config: ClaudeConfig,
@@ -70,27 +72,25 @@ suspend fun claudeComplete(
         return Result.failure(IllegalArgumentException(context.getString(R.string.incomplete_configuration)))
     }
 
-    try {
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+    val client = HttpClient(Android) {
+        install(ContentNegotiation) {
+            json(Json {
+                ignoreUnknownKeys = true
+                encodeDefaults = true
+            })
         }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 60000
+            connectTimeoutMillis = 60000
+            socketTimeoutMillis = 60000
+        }
+    }
 
-        val client = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(CLAUDE_API_URL)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val claudeApi = retrofit.create(ClaudeApi::class.java)
+    try {
+        val url = CLAUDE_API_URL + "messages"
 
         val request = ClaudeRequest(
+            model = config.model,
             messages = listOf(
                 ClaudeMessage(
                     role = "user",
@@ -108,15 +108,35 @@ suspend fun claudeComplete(
             )
         )
 
-        val response = claudeApi.complete(
-            apiKey = config.apiKey,
-            request = request
-        )
+        val response = client.post(url) {
+            contentType(ContentType.Application.Json)
+            headers {
+                append("x-api-key", config.apiKey)
+                append("anthropic-version", "2023-06-01")
+            }
+            setBody(request)
+        }
 
-        return response.content.filterIsInstance<ClaudeContent.Text>().firstOrNull()?.let {
-            Result.success(it.text)
-        } ?: Result.failure(Exception(context.getString(R.string.error_no_response)))
+        return when (response.status) {
+            HttpStatusCode.OK -> {
+                try {
+                    val claudeResponse = response.body<ClaudeResponse>()
+                    claudeResponse.content.filterIsInstance<ClaudeContent.Text>().firstOrNull()?.let {
+                        Result.success(it.text)
+                    } ?: Result.failure(Exception(context.getString(R.string.error_no_response)))
+                } catch (e: Exception) {
+                    val responseContent = response.body<String>()
+                    Result.failure(Exception("HTTP ${response.status}: $responseContent"))
+                }
+            }
+            else -> {
+                val responseContent = response.body<String>()
+                Result.failure(Exception("HTTP ${response.status}: $responseContent"))
+            }
+        }
     } catch (e: Exception) {
         return Result.failure(e)
+    } finally {
+        client.close()
     }
 }
