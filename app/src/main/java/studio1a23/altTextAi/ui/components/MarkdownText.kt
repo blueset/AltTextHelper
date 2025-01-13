@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.viewinterop.AndroidView
@@ -94,6 +95,7 @@ private fun createTextView(
             color = textColor,
             fontSize = fontSize,
             textAlign = textAlign,
+            lineBreak = LineBreak.Paragraph
         )
     )
     return TextView(context).apply {

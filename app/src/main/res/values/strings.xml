@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Alt Text Helper</string>
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="welcome_to">Welcome to %1$s</string>
     <string name="title_activity_share_receiver">Generate Alt Text</string>
     <string name="settings_api_key">API key</string>
     <string name="azure_openai_deployment_id">Deployment ID</string>

@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -110,6 +111,7 @@ class ShareReceiverViewModel : ViewModel() {
                                 }
 
                                 result.isFailure -> {
+                                    Log.e("ShareReceiverViewModel", "Error: ${result.exceptionOrNull()}", result.exceptionOrNull())
                                     _uiState.value =
                                         UiState.Error(
                                             result.exceptionOrNull()

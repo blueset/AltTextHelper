@@ -69,7 +69,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.openai.client)
     implementation(libs.generativeai)
     implementation(libs.markwon.core)
     implementation(libs.markwon.linkify)
@@ -78,6 +77,9 @@ dependencies {
         exclude(group = "org.jetbrains", module = "annotations-java5")
     }
     implementation(libs.prism4j.languages)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,20 +1,8 @@
 package studio1a23.altTextAi.api
 
 import android.content.Context
-import com.aallam.openai.api.chat.ChatCompletionRequest
-import com.aallam.openai.api.chat.ChatMessage
-import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.chat.ImagePart
-import com.aallam.openai.api.chat.ListContent
-import com.aallam.openai.api.chat.TextPart
-import com.aallam.openai.api.http.Timeout
-import com.aallam.openai.api.model.ModelId
-import com.aallam.openai.client.OpenAI
-import com.aallam.openai.client.OpenAIHost
 import studio1a23.altTextAi.AzureOpenAIConfig
-import studio1a23.altTextAi.MAX_TOKENS
 import studio1a23.altTextAi.R
-import kotlin.time.Duration.Companion.seconds
 
 suspend fun azureOpenApiComplete(
     config: AzureOpenAIConfig,
@@ -26,33 +14,20 @@ suspend fun azureOpenApiComplete(
         return Result.failure(IllegalArgumentException(context.getString(R.string.incomplete_configuration)))
     }
 
-    try {
-        val openai = OpenAI(
-            token = config.apiKey,
-            timeout = Timeout(socket = 60.seconds),
-            host = OpenAIHost.azure(config.resourceName, config.deploymentId, "2024-08-01-preview"),
-        )
-        val completion = openai.chatCompletion(
-            ChatCompletionRequest(
-                model = ModelId(config.model),
-                maxTokens = MAX_TOKENS,
-                messages = listOf(
-                    ChatMessage(
-                        role = ChatRole.User,
-                        messageContent = ListContent(
-                            listOf(
-                                TextPart(presetPrompt),
-                                ImagePart("data:image/png;base64,$base64Image", "high")
-                            )
-                        )
-                    )
-                )
-            )
-        )
+    val headers = mapOf(
+        "api-key" to config.apiKey,
+        "Content-Type" to "application/json"
+    )
 
-        return completion.choices.firstOrNull()?.message?.content?.let { Result.success(it) }
-            ?: Result.failure(Exception(context.getString(R.string.error_no_response)))
-    } catch (e: Exception) {
-        return Result.failure(e)
-    }
+    val baseUrl = "https://${config.resourceName}.openai.azure.com/openai/deployments/${config.deploymentId}"
+
+    return openAiComplete(
+        baseUrl = baseUrl,
+        headers = headers,
+        queryParameters = mapOf("api-version" to "2024-08-01-preview"),
+        model = config.model,
+        base64Image = base64Image,
+        presetPrompt = presetPrompt,
+        context = context
+    )
 }

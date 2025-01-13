@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import studio1a23.altTextAi.R
@@ -134,6 +135,7 @@ fun StepItem(
                     ProvideTextStyle(
                         value =
                         MaterialTheme.typography.titleMedium.copy(
+                            lineBreak = LineBreak.Heading,
                             color =
                             when (state) {
                                 StepState.Fail ->
@@ -158,6 +160,7 @@ fun StepItem(
                         ProvideTextStyle(
                             value =
                             MaterialTheme.typography.bodyMedium.copy(
+                                lineBreak = LineBreak.Heading,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         ) { description() }
