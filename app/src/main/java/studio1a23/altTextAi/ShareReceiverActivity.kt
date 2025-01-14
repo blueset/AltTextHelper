@@ -91,7 +91,6 @@ fun ShareReceiverScreen(imageUri: Uri) {
     val noAutoStart = invalidConfig || settings?.presetPrompt?.isBlank() == true
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarCopiedToClipboard = stringResource(R.string.snackbar_copied_to_clipboard)
-    val buttonDismiss = stringResource(R.string.button_dismiss)
 
     LaunchedEffect(imageUri, noAutoStart) {
         if (!noAutoStart) {
@@ -180,7 +179,7 @@ fun ShareReceiverScreen(imageUri: Uri) {
                             scope.launch {
                                 snackbarHostState.showSnackbar(
                                     message = snackbarCopiedToClipboard,
-                                    actionLabel = buttonDismiss
+                                    withDismissAction = true,
                                 )
                             }
                         }
@@ -282,7 +281,12 @@ fun ErrorDialog(error: UiState.Error, onRetry: () -> Unit) {
     val errorMessage = error.exception.message ?: stringResource(R.string.unknown_error)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(16.dp)) {
         if (error.data?.isEmpty() == false) {
-            SelectionContainer { Text(error.data, style = MaterialTheme.typography.bodyLarge) }
+            MarkdownText(
+                error.data,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.animateContentSize(),
+                isSelectable = true
+            )
             HorizontalDivider()
         }
         Text("Error", style = MaterialTheme.typography.titleLarge)
