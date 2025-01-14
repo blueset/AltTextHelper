@@ -50,6 +50,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import kotlinx.coroutines.launch
 import studio1a23.altTextAi.SettingsDataStore.getSettings
+import studio1a23.altTextAi.ui.components.MarkdownText
 import studio1a23.altTextAi.ui.theme.AltTextHelperTheme
 
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? =
@@ -258,10 +259,11 @@ fun ResultDialog(resultText: String, onCopy: () -> Unit, isStreaming: Boolean = 
             )
         }
         SelectionContainer {
-            Text(
+            MarkdownText(
                 resultText,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.animateContentSize()
+                modifier = Modifier.animateContentSize(),
+                isSelectable = true
             )
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {

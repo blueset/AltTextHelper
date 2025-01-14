@@ -47,7 +47,7 @@
     <!-- TRANSLATORS: %1$s is the name of the app -->
     <string name="guide_set_up">Set up %1$s</string>
     <!-- TRANSLATORS: %1$s is the name of the app -->
-    <string name="guide_set_up_body_text">%1$s generates descriptive alt text for your images using AI. To use this app, you’ll need to provide your own API key from one of our supported services:\n\n- OpenAI (GPT-4 Vision and others)\n- Anthropic Claude\n- Google Gemini\n- Any OpenAI-compatible API\n\nTo get started, go to Settings and configure your preferred API service with your API key. You can also set a default prompt to customize how the alt text is generated.</string>
+    <string name="guide_set_up_body_text"><![CDATA[%1$s generates descriptive alt text for your images using AI. To use this app, you’ll need to provide your own API key from one of our supported services:\n\n- OpenAI (offered by OpenAI or Azure)\n- Anthropic Claude\n- Google Gemini\n- Any OpenAI-compatible API\n\n> Please note that using these AI services will incur costs according to their respective pricing.\n\nTo get started, go to Settings and configure your preferred API service with your API key. You can also set a default prompt to customize how the alt text is generated.]]></string>
     <string name="guide_generate">Generate alt text from images</string>
     <string name="guide_generate_description">Share a picture from any app to generate alt text, or pick a picture from your gallery.</string>
     <string name="button_pick_a_picture">Pick a picture</string>
