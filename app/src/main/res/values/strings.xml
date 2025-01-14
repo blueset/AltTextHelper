@@ -15,10 +15,17 @@
     <string name="openai_guide"><![CDATA[Create your API key at <a href=\"https://platform.openai.com/api-keys\">https://platform.openai.com/api-keys</a>.]]></string>
     <string name="claude_guide"><![CDATA[Create your API key at <a href=\"https://console.anthropic.com/\">https://console.anthropic.com/</a>.]]></string>
     <string name="gemini_guide"><![CDATA[Create your API key at <a href=\"https://aistudio.google.com/app/\">https://aistudio.google.com/app/</a>.]]></string>
+    <string name="openai_compat_guide_1">The “OpenAI-compatible” config assumes an API endpoint that behaves similar to that of OpenAI. Under this config, it will send an HTTP POST request as follows.</string>
+    <string name="openai_compat_guide_2">And expect a successful response in JSON with at least the following fields:</string>
+    <string name="openai_compat_guide_3">You can use this option if the above API endpoint matches the API specification of your service provider, and the provider is not otherwise already supported by the app.</string>
+    <string name="openai_compat_guide_stream_1">The “OpenAI-compatible” config assumes an API endpoint that supports streaming responses similar to OpenAI. Under this config, it will send an HTTP POST request as follows and expect [Server-Sent Events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) in the response, with each event containing a delta of the generated text.</string>
+    <string name="openai_compat_guide_stream_2">The server should respond with a stream of events, each containing a JSON payload with at least the following fields:</string>
+    <string name="openai_compat_guide_stream_3">Each event should contain a delta of the generated text, which will be concatenated to form the complete alt text. The stream ends with a `[DONE]` event. You can use this option if the above API endpoint matches the API specification of your service provider, and the provider is not otherwise already supported by the app.</string>
     <string name="openai_organization">Organization (optional)</string>
     <string name="settings_model">Model</string>
     <string name="settings_preset_prompt">Preset prompt</string>
     <string name="settings_api_type">API type</string>
+    <string name="settings_base64_image">Base64 image</string>
     <string name="button_save">Save</string>
     <string name="title_settings">Settings</string>
     <string name="button_back">Back</string>
@@ -59,4 +66,5 @@
     <string name="snackbar_copied_to_clipboard">Copied to clipboard</string>
     <string name="unknown_exception">Unknown exception</string>
     <string name="request_cancelled">Request cancelled</string>
+    <string name="settings_enable_streaming">Enable streaming</string>
 </resources>

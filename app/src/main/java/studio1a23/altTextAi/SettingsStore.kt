@@ -112,12 +112,14 @@ object SettingsDataStore {
     private val API_CONFIG = stringPreferencesKey("api_config")
     private val API_TYPE = stringPreferencesKey("api_type")
     private val PRESET_PROMPT = stringPreferencesKey("preset_prompt")
+    private val ENABLE_STREAMING = stringPreferencesKey("enable_streaming")
 
     suspend fun saveSettings(context: Context, newSettings: Settings) {
         context.dataStore.edit { settings ->
             settings[API_CONFIG] = Json.encodeToString(newSettings.configs)
             settings[API_TYPE] = newSettings.apiType.toString()
             settings[PRESET_PROMPT] = newSettings.presetPrompt
+            settings[ENABLE_STREAMING] = newSettings.enableStreaming.toString()
         }
     }
 
@@ -125,6 +127,7 @@ object SettingsDataStore {
         return context.dataStore.data.map { preferences ->
             val apiType = ApiType.fromString(preferences[API_TYPE])
             val apiConfigJson = preferences[API_CONFIG]
+            val enableStreaming = preferences[ENABLE_STREAMING]?.toBoolean() ?: false
 
             val configs = try {
                 apiConfigJson?.let { Json.decodeFromString<ApiConfigs>(apiConfigJson) }
@@ -135,7 +138,9 @@ object SettingsDataStore {
             Settings.build(
                 configs = configs,
                 apiType = apiType,
-                presetPrompt = preferences[PRESET_PROMPT] ?: context.getString(R.string.default_prompt_text)
+                presetPrompt = preferences[PRESET_PROMPT]
+                    ?: context.getString(R.string.default_prompt_text),
+                enableStreaming = enableStreaming
             )
         }
     }
@@ -144,17 +149,20 @@ object SettingsDataStore {
 data class Settings(
     val configs: ApiConfigs,
     val apiType: ApiType,
-    val presetPrompt: String
+    val presetPrompt: String,
+    val enableStreaming: Boolean = false
 ) {
     companion object {
         fun build(
             configs: ApiConfigs? = null,
             apiType: ApiType? = null,
-            presetPrompt: String? = null
+            presetPrompt: String? = null,
+            enableStreaming: Boolean? = null
         ) = Settings(
             configs ?: ApiConfigs(),
             apiType ?: DEFAULT_API_TYPE,
-            presetPrompt ?: ""
+            presetPrompt ?: "",
+            enableStreaming ?: false
         )
     }
 

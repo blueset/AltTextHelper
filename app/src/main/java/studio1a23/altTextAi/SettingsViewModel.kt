@@ -38,6 +38,10 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         _settings.value = _settings.value.copy(presetPrompt = presetPrompt)
     }
 
+    fun updateEnableStreaming(enabled: Boolean) {
+        _settings.value = _settings.value.copy(enableStreaming = enabled)
+    }
+
     fun saveSettings() {
         viewModelScope.launch {
             SettingsDataStore.saveSettings(

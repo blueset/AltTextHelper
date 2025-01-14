@@ -8,6 +8,8 @@ suspend fun openApiComplete(
     config: OpenAIConfig,
     base64Image: String,
     presetPrompt: String,
+    enableStreaming: Boolean = false,
+    onChunk: (String) -> Unit = {},
     context: Context
 ): Result<String> {
     if (config.apiKey.isEmpty() || config.model.isEmpty()) {
@@ -27,6 +29,8 @@ suspend fun openApiComplete(
         model = config.model,
         base64Image = base64Image,
         presetPrompt = presetPrompt,
+        enableStreaming = enableStreaming,
+        onChunk = onChunk,
         context = context
     )
 }

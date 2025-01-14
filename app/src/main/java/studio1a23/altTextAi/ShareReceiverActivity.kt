@@ -8,6 +8,7 @@ import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -172,30 +174,39 @@ fun ShareReceiverScreen(imageUri: Uri) {
                             ) { Text(stringResource(R.string.title_settings)) }
                         }
                     } else {
+                        val onCopy: () -> Unit = {
+                            viewModel.copyToClipboard(context)
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = snackbarCopiedToClipboard,
+                                    actionLabel = buttonDismiss
+                                )
+                            }
+                        }
                         when (uiState) {
                             is UiState.Loading -> {
                                 LoadingDialog()
                             }
 
+                            is UiState.Streaming -> {
+                                ResultDialog(
+                                    resultText = (uiState as UiState.Streaming).currentData,
+                                    onCopy = onCopy,
+                                    isStreaming = true
+                                )
+                            }
+
                             is UiState.Success -> {
                                 ResultDialog(
                                     resultText = (uiState as UiState.Success).data,
-                                    onCopy = {
-                                        viewModel.copyToClipboard(context)
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar(
-                                                message = snackbarCopiedToClipboard,
-                                                actionLabel = buttonDismiss
-                                            )
-                                        }
-                                    },
+                                    onCopy = onCopy,
+                                    isStreaming = false
                                 )
                             }
 
                             is UiState.Error -> {
                                 ErrorDialog(
-                                    errorMessage = (uiState as UiState.Error).exception.message
-                                        ?: stringResource(R.string.unknown_error),
+                                    error = uiState as UiState.Error,
                                     onRetry = { viewModel.processImage(context, imageUri) },
                                 )
                             }
@@ -234,12 +245,30 @@ fun ShareReceiverScreen(imageUri: Uri) {
 }
 
 @Composable
-fun ResultDialog(resultText: String, onCopy: () -> Unit) {
+fun ResultDialog(resultText: String, onCopy: () -> Unit, isStreaming: Boolean = false) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(16.dp)) {
-        Text("Result", style = MaterialTheme.typography.titleLarge)
-        SelectionContainer { Text(resultText, style = MaterialTheme.typography.bodyLarge) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                if (isStreaming) stringResource(R.string.generating) else stringResource(R.string.title_result),
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+        SelectionContainer {
+            Text(
+                resultText,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.animateContentSize()
+            )
+        }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            FilledTonalButton(onClick = onCopy) {
+            FilledTonalButton(
+                onClick = onCopy,
+                enabled = !isStreaming && resultText.isNotEmpty()
+            ) {
                 Text(stringResource(R.string.button_copy_to_clipboard))
             }
         }
@@ -247,8 +276,13 @@ fun ResultDialog(resultText: String, onCopy: () -> Unit) {
 }
 
 @Composable
-fun ErrorDialog(errorMessage: String, onRetry: () -> Unit) {
+fun ErrorDialog(error: UiState.Error, onRetry: () -> Unit) {
+    val errorMessage = error.exception.message ?: stringResource(R.string.unknown_error)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(16.dp)) {
+        if (error.data?.isEmpty() == false) {
+            SelectionContainer { Text(error.data, style = MaterialTheme.typography.bodyLarge) }
+            HorizontalDivider()
+        }
         Text("Error", style = MaterialTheme.typography.titleLarge)
         SelectionContainer { Text(errorMessage, style = MaterialTheme.typography.bodyLarge) }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {

@@ -29,7 +29,11 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 sealed class UiState {
     data object Loading : UiState()
     data class Success(val data: String) : UiState()
-    data class Error(val exception: Throwable) : UiState()
+    data class Streaming(val currentData: String) : UiState()
+    data class Error(val exception: Throwable, private val previousUiState: UiState? = null) : UiState() {
+        val data: String? =
+            if (previousUiState is Success) previousUiState.data else if (previousUiState is Streaming) previousUiState.currentData else null
+    }
 }
 
 class ShareReceiverViewModel : ViewModel() {
@@ -38,13 +42,21 @@ class ShareReceiverViewModel : ViewModel() {
 
     private var resultText: String = ""
     private var currentJob: kotlinx.coroutines.Job? = null
+    private var streamingBuffer: StringBuilder = StringBuilder()
 
     private val _prompt = MutableStateFlow("")
     val prompt: StateFlow<String> = _prompt
 
+    // Callback for handling streaming updates
+    private val streamingCallback: (String) -> Unit = { chunk ->
+        streamingBuffer.append(chunk)
+        _uiState.value = UiState.Streaming(streamingBuffer.toString())
+    }
+
     fun cancelProcessing(context: Context) {
         currentJob?.cancel()
-        _uiState.value = UiState.Error(Exception(context.getString(R.string.request_cancelled)))
+        _uiState.value =
+            UiState.Error(Exception(context.getString(R.string.request_cancelled)), _uiState.value)
     }
 
     fun processImage(context: Context, imageUri: Uri) {
@@ -62,48 +74,64 @@ class ShareReceiverViewModel : ViewModel() {
                                 _prompt.value = settings.presetPrompt
                             }
                             val presetPrompt = _prompt.value
-                            val result =
-                                when (val config = settings.activeConfig) {
-                                    is AzureOpenAIConfig ->
-                                        azureOpenApiComplete(
-                                            config,
-                                            base64Image,
-                                            presetPrompt,
-                                            context
-                                        )
-
-                                    is OpenAIConfig ->
-                                        openApiComplete(
-                                            config,
-                                            base64Image,
-                                            presetPrompt,
-                                            context
-                                        )
-
-                                    is ClaudeConfig ->
-                                        claudeComplete(
-                                            config,
-                                            base64Image,
-                                            presetPrompt,
-                                            context
-                                        )
-
-                                    is GeminiConfig ->
-                                        geminiComplete(
-                                            config,
-                                            bitmapImage,
-                                            presetPrompt,
-                                            context
-                                        )
-
-                                    is OpenAICompatibleConfig ->
-                                        openApiCompatibleComplete(
-                                            config,
-                                            base64Image,
-                                            presetPrompt,
-                                            context
-                                        )
+                            val onChunk: (String) -> Unit = { chunk ->
+                                streamingBuffer.append(chunk)
+                                _uiState.value = UiState.Streaming(streamingBuffer.toString())
+                            }
+                            val result = when (val config = settings.activeConfig) {
+                                is OpenAIConfig -> {
+                                    openApiComplete(
+                                        config = config,
+                                        base64Image = base64Image,
+                                        presetPrompt = presetPrompt,
+                                        enableStreaming = settings.enableStreaming,
+                                        onChunk = onChunk,
+                                        context = context,
+                                    )
                                 }
+
+                                is AzureOpenAIConfig ->
+                                    azureOpenApiComplete(
+                                        config = config,
+                                        base64Image = base64Image,
+                                        presetPrompt = presetPrompt,
+                                        enableStreaming = settings.enableStreaming,
+                                        onChunk = onChunk,
+                                        context = context,
+                                    )
+
+                                is ClaudeConfig ->
+                                    claudeComplete(
+                                        config = config,
+                                        base64Image = base64Image,
+                                        presetPrompt = presetPrompt,
+                                        enableStreaming = settings.enableStreaming,
+                                        onChunk = onChunk,
+                                        context = context,
+                                    )
+
+                                is GeminiConfig ->
+                                    geminiComplete(
+                                        config = config,
+                                        imageBitmap = bitmapImage,
+                                        presetPrompt = presetPrompt,
+                                        enableStreaming = settings.enableStreaming,
+                                        onChunk = onChunk,
+                                        context = context
+                                    )
+
+                                is OpenAICompatibleConfig ->
+                                    openApiCompatibleComplete(
+                                        config = config,
+                                        base64Image = base64Image,
+                                        presetPrompt = presetPrompt,
+                                        enableStreaming = settings.enableStreaming,
+                                        onChunk = onChunk,
+                                        context = context
+                                    )
+                            }
+                            // Reset streaming buffer before processing result
+                            streamingBuffer.clear()
                             when {
                                 result.isSuccess -> {
                                     resultText = result.getOrThrow()
@@ -111,20 +139,26 @@ class ShareReceiverViewModel : ViewModel() {
                                 }
 
                                 result.isFailure -> {
-                                    Log.e("ShareReceiverViewModel", "Error: ${result.exceptionOrNull()}", result.exceptionOrNull())
+                                    Log.e(
+                                        "ShareReceiverViewModel",
+                                        "Error: ${result.exceptionOrNull()}",
+                                        result.exceptionOrNull()
+                                    )
                                     _uiState.value =
                                         UiState.Error(
                                             result.exceptionOrNull()
-                                                ?: Exception(context.getString(R.string.unknown_exception))
+                                                ?: Exception(context.getString(R.string.unknown_exception)),
+                                            _uiState.value
                                         )
                                 }
                             }
                         } catch (e: NotImplementedError) {
-                            _uiState.value = UiState.Error(e)
+                            _uiState.value = UiState.Error(e, _uiState.value)
                         }
                     }
                 } else {
-                    _uiState.value = UiState.Error(Exception(context.getString(R.string.error_failed_to_load_image)))
+                    _uiState.value =
+                        UiState.Error(Exception(context.getString(R.string.error_failed_to_load_image)), _uiState.value)
                 }
             }
     }
