@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -22,12 +23,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -76,7 +80,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(onPickImage: () -> Unit) {
     val navController = rememberNavController()
-    val baseTitle = "" // stringResource(R.string.app_name)
+    val baseTitle = stringResource(R.string.welcome_to, stringResource(R.string.app_name))
     val settingsTitle = stringResource(R.string.title_settings)
     val (title, setTitle) = remember { mutableStateOf(baseTitle) }
     val (canPop, setCanPop) = remember { mutableStateOf(false) }
@@ -106,27 +110,44 @@ fun MainScreen(onPickImage: () -> Unit) {
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    if (canPop) {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription =
-                                stringResource(R.string.button_back)
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    if (!canPop) {
-                        IconButton(onClick = { navController.navigate("settings") }) {
-                            Icon(Icons.Default.Settings, contentDescription = settingsTitle)
-                        }
+            val navigationIcon: @Composable () -> Unit = {
+                if (canPop) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                            stringResource(R.string.button_back)
+                        )
                     }
                 }
-            )
+            }
+            val actions: @Composable RowScope.() -> Unit = {
+                if (!canPop) {
+                    IconButton(onClick = { navController.navigate("settings") }) {
+                        Icon(Icons.Default.Settings, contentDescription = settingsTitle)
+                    }
+                }
+            }
+            if (canPop) {
+                TopAppBar(
+                    title = { Text(title) },
+                    navigationIcon = navigationIcon
+                )
+            } else {
+                LargeTopAppBar(
+                    title = {
+                        Text(
+                            title,
+                            modifier = Modifier.padding(end = 16.dp),
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                lineBreak = LineBreak.Heading
+                            )
+                        )
+                    },
+                    expandedHeight = TopAppBarDefaults.LargeAppBarExpandedHeight + 32.dp,
+                    actions = actions
+                )
+            }
         }
     ) { paddingValues ->
         NavHost(
@@ -140,7 +161,7 @@ fun MainScreen(onPickImage: () -> Unit) {
                     onPickImage = onPickImage
                 )
             }
-            composable("settings") { SettingsScreen(snackbarHostState = snackbarHostState) }
+            composable("settings") { SettingsScreen() }
         }
     }
 }
@@ -155,14 +176,6 @@ fun HomeContent(onSettings: () -> Unit, onPickImage: () -> Unit) {
         Modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Spacer(Modifier.height(64.dp))
-        Text(
-            stringResource(R.string.welcome_to, stringResource(R.string.app_name)),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.headlineLarge.copy(
-                lineBreak = LineBreak.Heading
-            )
-        )
         VerticalStepper(
             modifier = Modifier
                 .fillMaxSize()

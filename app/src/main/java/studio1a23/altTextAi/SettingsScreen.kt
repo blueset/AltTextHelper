@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,22 +45,17 @@ private fun getApiTypeName(type: ApiType) =
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = viewModel(),
-    snackbarHostState: SnackbarHostState
+    viewModel: SettingsViewModel = viewModel()
 ) {
     val settings by viewModel.settings.collectAsState()
     var expanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val snackbarSettingsSaved = stringResource(R.string.snackbar_settings_saved)
-    val buttonDismiss = stringResource(R.string.button_dismiss)
 
-    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
             OutlinedTextField(
                 value = settings.presetPrompt,
                 onValueChange = { viewModel.updatePresetPrompt(it) },
@@ -152,19 +144,5 @@ fun SettingsScreen(
                         onValueChange = viewModel::updateApiConfig
                     )
             }
-        }
-
-        Button(
-            modifier = Modifier.align(Alignment.End),
-            onClick = {
-                viewModel.saveSettings()
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = snackbarSettingsSaved,
-                        actionLabel = buttonDismiss
-                    )
-                }
-            },
-        ) { Text(stringResource(R.string.button_save)) }
     }
 }

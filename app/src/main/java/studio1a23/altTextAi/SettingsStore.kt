@@ -32,7 +32,7 @@ data class AzureOpenAIConfig(
     val model: String = "gpt-4o",
 ) : ApiConfig {
     override val isFilled: Boolean
-        get() = apiKey.isNotEmpty() || resourceName.isNotEmpty() || deploymentId.isNotEmpty()
+        get() = apiKey.isNotEmpty() && resourceName.isNotEmpty() && deploymentId.isNotEmpty()
 }
 
 @Serializable
@@ -42,7 +42,7 @@ data class OpenAIConfig(
     val model: String = "gpt-4o",
 ) : ApiConfig {
     override val isFilled: Boolean
-        get() = apiKey.isNotEmpty() || model.isNotEmpty()
+        get() = apiKey.isNotEmpty() && model.isNotEmpty()
 }
 
 @Serializable
@@ -54,7 +54,7 @@ data class OpenAICompatibleConfig(
     val baseUrlWithSlash: String
         get() = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
     override val isFilled: Boolean
-        get() = apiKey.isNotEmpty() || baseUrl.isNotEmpty() || model.isNotEmpty()
+        get() = apiKey.isNotEmpty() && baseUrl.isNotEmpty() && model.isNotEmpty()
 }
 
 @Serializable
@@ -63,7 +63,7 @@ data class ClaudeConfig(
     val model: String = "claude-3-5-sonnet-latest",
 ) : ApiConfig {
     override val isFilled: Boolean
-        get() = apiKey.isNotEmpty() || model.isNotEmpty()
+        get() = apiKey.isNotEmpty() && model.isNotEmpty()
 }
 
 @Serializable
@@ -72,7 +72,7 @@ data class GeminiConfig(
     val model: String = "gemini-2.0-flash-exp",
 ) : ApiConfig {
     override val isFilled: Boolean
-        get() = apiKey.isNotEmpty() || model.isNotEmpty()
+        get() = apiKey.isNotEmpty() && model.isNotEmpty()
 }
 
 @Serializable

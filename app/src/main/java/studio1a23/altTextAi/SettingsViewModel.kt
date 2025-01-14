@@ -19,8 +19,18 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         }
     }
 
+    private fun save() {
+        viewModelScope.launch {
+            SettingsDataStore.saveSettings(
+                application.applicationContext,
+                _settings.value
+            )
+        }
+    }
+
     fun updateApiType(type: ApiType) {
         _settings.value = _settings.value.copy(apiType = type)
+        save()
     }
 
     fun updateApiConfig(config: ApiConfig) {
@@ -32,22 +42,16 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
             is OpenAICompatibleConfig -> _settings.value.configs.copy(openaiCompatible = config)
         }
         _settings.value = _settings.value.copy(configs = newConfigs)
+        save()
     }
 
     fun updatePresetPrompt(presetPrompt: String) {
         _settings.value = _settings.value.copy(presetPrompt = presetPrompt)
+        save()
     }
 
     fun updateEnableStreaming(enabled: Boolean) {
         _settings.value = _settings.value.copy(enableStreaming = enabled)
-    }
-
-    fun saveSettings() {
-        viewModelScope.launch {
-            SettingsDataStore.saveSettings(
-                application.applicationContext,
-                _settings.value
-            )
-        }
+        save()
     }
 }
