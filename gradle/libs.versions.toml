@@ -18,6 +18,7 @@ loggingInterceptor = "5.0.0-alpha.14"
 generativeai = "0.9.0"
 markwon = "4.6.2"
 ktorClientAndroid = "2.3.13"
+coreSplashscreen = "1.2.0-alpha02"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +53,7 @@ prism4j-languages = { group = "ca.blarg", name = "prism4j-languages", version = 
 ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorClientAndroid" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorClientAndroid" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

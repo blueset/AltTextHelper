@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.AltTextHelper" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.AltTextHelper" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splashscreen</item>
+        <item name="android:windowSplashScreenBackground">@android:color/background_light</item>
+    </style>
     <style name="Theme.TransparentDialog" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splashscreen</item>
     </style>
 </resources>
