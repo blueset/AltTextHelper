@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">Alt 文本助手</string>
+
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="welcome_to">欢迎使用 %1$s</string>
+
+    <string name="title_activity_share_receiver">生成 Alt 文本</string>
+    <string name="settings_api_key">API Key</string>
+    <string name="azure_openai_deployment_id">部署 ID</string>
+    <string name="azure_openai_resource_name">资源名称</string>
+    <string name="azure_openai_api_key_help">API Key 是一个 32 位十六进制字符串。请提供 Key 1 或 Key 2。</string>
+
+    <string name="azure_openai_api_resource_name_help"><![CDATA[您的 Azure OpenAI 资源名称，也可以在端点 URL 中找到，例如 <font face="monospace">https://<b>您的资源名称</b>.openai.azure.com/</font>]]></string>
+    <string name="azure_openai_guide"><![CDATA[在此创建 API Key、资源与部署：<a href="https://ai.azure.com/">https://ai.azure.com/</a>。]]></string>
+
+    <string name="azure_openai_name">Azure OpenAI</string>
+    <string name="openai_name">OpenAI</string>
+    <string name="incomplete_configuration">配置不完整</string>
+    <string name="openai_guide"><![CDATA[请在此创建您的 API Key：<a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a>。]]></string>
+    <string name="claude_guide"><![CDATA[请在此创建您的 API Key：<a href="https://console.anthropic.com/">https://console.anthropic.com/</a>。]]></string>
+    <string name="gemini_guide"><![CDATA[请在此创建您的 API Key：<a href="https://aistudio.google.com/app/">https://aistudio.google.com/app/</a>。]]></string>
+
+    <string name="openai_compat_guide_1">「OpenAI 兼容」配置假设其 API Endpoint 的行为与 OpenAI 类似。在此配置中，将以如下方式发送 HTTP POST 请求：</string>
+    <string name="openai_compat_guide_2">并期望在 JSON 中至少包含以下字段的成功响应：</string>
+    <string name="openai_compat_guide_3">如果上述 API Endpoint 符合您的服务提供商的 API 规范，且该服务提供商尚未被本应用支持，您可使用此选项。</string>
+
+    <string name="openai_compat_guide_stream_1">「OpenAI 兼容」配置假设其 API Endpoint 支持与 OpenAI 相似的流式响应。在此配置中，将以如下方式发送 HTTP POST 请求，并期望使用[服务器发送事件（SSE）](https://developer.mozilla.org/zh-CN/docs/Web/API/Server-sent_events/Using_server-sent_events)的响应，其中每个事件包含生成文本的一部分增量。</string>
+    <string name="openai_compat_guide_stream_2">服务器应返回一系列事件流，每个事件都包含至少以下字段的 JSON 负载：</string>
+    <string name="openai_compat_guide_stream_3">每个事件都应包含生成文本的一部分增量，这些增量将被拼接以形成完整的 Alt 文本。流以 `[DONE]` 事件结束。如果上述 API Endpoint 符合您的服务提供商的 API 规范，且该服务尚未被本应用直接支持，您可使用此选项。</string>
+
+    <string name="openai_organization">组织（可选）</string>
+    <string name="settings_model">模型</string>
+    <string name="settings_preset_prompt">预设提示语/string>
+    <string name="settings_api_type">API 类型</string>
+    <string name="settings_base64_image">Base64 图片</string>
+    <string name="button_save">保存</string>
+    <string name="title_settings">设置</string>
+    <string name="button_back">返回</string>
+    <string name="title_generate_alt_text">生成 Alt 文本</string>
+    <string name="unknown_error">未知错误</string>
+    <string name="input_prompt">提示语</string>
+    <string name="button_copy_to_clipboard">复制到剪贴板</string>
+    <string name="button_retry">重试</string>
+    <string name="generating">正在生成…</string>
+    <string name="error_no_response">无响应</string>
+    <string name="claude_name">Anthropic Claude</string>
+    <string name="gemini_name">Gemini</string>
+    <string name="openai_compatible_base_url">基础 URL</string>
+    <string name="openai_compatible_name">OpenAI 兼容 API</string>
+    <string name="button_update">更新</string>
+    <string name="incomplete_configuration_prompt">API 配置不完整。请在「设置」中输入您的 API 详细信息。</string>
+    <string name="no_preset_prompt">您可以设置一个生成 Alt 文本的默认提示语。</string>
+    <string name="button_cancel">取消</string>
+
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="guide_set_up">设置 %1$s</string>
+
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="guide_set_up_body_text"><![CDATA[%1$s 可以使用 AI 为您的图像生成描述性 Alt 文本。要使用此应用，您需要提供我们支持的服务之一的 API Key：\n\n- OpenAI（由 OpenAI 或 Azure 提供）\n- Anthropic Claude\n- Google Gemini\n- 任何 OpenAI 兼容 API\n\n> 请注意，使用这些 AI 服务会根据各自定价产生费用。\n\n开始使用时，请前往「设置」，使用您的 API Key 配置您偏好的 API 服务。您也可设置默认提示语，以自定义 Alt 文本的生成方式。]]></string>
+
+    <string name="guide_generate">从图像生成 Alt 文本</string>
+    <string name="guide_generate_description">您可以从任意应用分享图片以生成 Alt 文本，或从图库中选择图片。</string>
+    <string name="button_pick_a_picture">选择图片</string>
+    <string name="default_prompt_text">为此图片撰写一段可用于社交媒体的 Alt 文本，并包含图片中的文字内容。</string>
+
+    <!-- TRANSLATORS: %1$s is the number of the step, %2$s is the state of the step, one of step_state_failed, step_state_completed, step_state_active, or step_state_upcoming. -->
+    <string name="step_content_description">步骤 %1$s：%2$s</string>
+    <string name="step_state_failed">失败</string>
+    <string name="step_state_completed">已完成</string>
+    <string name="step_state_active">进行中</string>
+    <string name="step_state_upcoming">即将进行</string>
+
+    <string name="settings_preset_prompt_help">为 AI 模型生成 ALT 文本时使用的默认提示语。</string>
+    <string name="snackbar_settings_saved">设置已保存</string>
+    <string name="button_dismiss">关闭</string>
+    <string name="error_failed_to_load_image">加载图片失败</string>
+    <string name="title_result">结果</string>
+    <string name="snackbar_copied_to_clipboard">已复制到剪贴板</string>
+    <string name="unknown_exception">未知异常</string>
+    <string name="request_cancelled">请求已取消</string>
+    <string name="settings_enable_streaming">启用流式传输</string>
+</resources>

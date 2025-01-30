@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">Alt テキストヘルパー</string>
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="welcome_to">%1$s へようこそ</string>
+    <string name="title_activity_share_receiver">Alt テキストを生成</string>
+    <string name="settings_api_key">API キー</string>
+    <string name="azure_openai_deployment_id">デプロイ ID</string>
+    <string name="azure_openai_resource_name">リソース名</string>
+    <string name="azure_openai_api_key_help">API キーは32桁の16進数文字列です。Key 1 または Key 2 のいずれかを入力してください。</string>
+    <string name="azure_openai_api_resource_name_help"><![CDATA[Azure OpenAIリソースの名前です。エンドポイント URL にも含まれています。例: <font face="monospace">https://<b>リソースの名前</b>.openai.azure.com/</font>]]></string>
+    <string name="azure_openai_guide"><![CDATA[<a href="https://ai.azure.com/">https://ai.azure.com/</a> で API キーやリソース、デプロイを作成してください。]]></string>
+    <string name="azure_openai_name">Azure OpenAI</string>
+    <string name="openai_name">OpenAI</string>
+    <string name="incomplete_configuration">構成が不完全です</string>
+    <string name="openai_guide"><![CDATA[<a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a> で API キーを作成してください。]]></string>
+    <string name="claude_guide"><![CDATA[<a href="https://console.anthropic.com/">https://console.anthropic.com/</a> で API キーを作成してください。]]></string>
+    <string name="gemini_guide"><![CDATA[<a href="https://aistudio.google.com/app/">https://aistudio.google.com/app/</a> で API キーを作成してください。]]></string>
+    <string name="openai_compat_guide_1">「OpenAI 互換」構成では、OpenAI に類似した動作をする API エンドポイントを想定しています。この構成の場合、以下のように HTTP POST リクエストが送信されます。</string>
+    <string name="openai_compat_guide_2">そして、成功時には少なくとも以下のフィールドを含むJSONでのレスポンスを想定しています:</string>
+    <string name="openai_compat_guide_3">上記 API エンドポイントがサービスプロバイダの API 仕様に適合し、かつアプリが既に対応していない場合は、このオプションを利用できます。</string>
+    <string name="openai_compat_guide_stream_1">「OpenAI 互換」構成では、OpenAIに類似したストリーミングレスポンスをサポートする API エンドポイントを想定しています。この構成の場合、以下のようにHTTP POSTリクエストが送信され、レスポンスとして[サーバー送信イベント（SSE）](https://developer.mozilla.org/ja/docs/Web/API/Server-sent_events/Using_server-sent_events)を受信し、各イベントには生成されたテキストの差分が含まれます。</string>
+    <string name="openai_compat_guide_stream_2">サーバーはイベントのストリームを返し、各イベントには少なくとも以下のフィールドを含むJSONペイロードが含まれている必要があります:</string>
+    <string name="openai_compat_guide_stream_3">各イベントには生成されたテキストの差分が含まれ、それらを連結して完全なALTテキストを形成します。ストリームは `[DONE]` イベントで終了します。上記 API エンドポイントがサービスプロバイダの API 仕様に合致し、かつアプリが既に対応していない場合には、このオプションを利用できます。</string>
+    <string name="openai_organization">組織（任意）</string>
+    <string name="settings_model">モデル</string>
+    <string name="settings_preset_prompt">プリセットプロンプト</string>
+    <string name="settings_api_type">API タイプ</string>
+    <string name="settings_base64_image">Base64 画像</string>
+    <string name="button_save">保存</string>
+    <string name="title_settings">設定</string>
+    <string name="button_back">戻る</string>
+    <string name="title_generate_alt_text">Alt テキストを生成</string>
+    <string name="unknown_error">不明なエラー</string>
+    <string name="input_prompt">プロンプト</string>
+    <string name="button_copy_to_clipboard">クリップボードにコピー</string>
+    <string name="button_retry">再試行</string>
+    <string name="generating">生成中…</string>
+    <string name="error_no_response">レスポンスがありません</string>
+    <string name="claude_name">Anthropic Claude</string>
+    <string name="gemini_name">Gemini</string>
+    <string name="openai_compatible_base_url">ベース URL</string>
+    <string name="openai_compatible_name">OpenAI 互換 API</string>
+    <string name="button_update">更新</string>
+    <string name="incomplete_configuration_prompt">API 構成が不完全です。設定画面で API 情報を入力してください。</string>
+    <string name="no_preset_prompt">Alt テキスト生成のためのデフォルトプロンプトを設定できます。</string>
+    <string name="button_cancel">キャンセル</string>
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="guide_set_up">%1$s を設定</string>
+    <!-- TRANSLATORS: %1$s is the name of the app -->
+    <string name="guide_set_up_body_text"><![CDATA[%1$s は、AIを使用して画像に説明的な Alt テキストを生成します。このアプリを利用するには、以下のいずれかの対応サービスから独自の API キーを用意する必要があります:\n\n- OpenAI (OpenAI または Azure が提供)\n- Anthropic Claude\n- Google Gemini\n- その他の OpenAI 互換 API\n\n> 注意: これらの AI サービスを利用すると、それぞれの価格に応じたコストが発生する場合があります。\n\nまずは設定画面に移動し、API サービスと API キーを設定してください。また、Alt テキストの生成方法をカスタマイズするために、デフォルトプロンプトを設定することもできます。]]></string>
+    <string name="guide_generate">画像から Alt テキストを生成する</string>
+    <string name="guide_generate_description">任意のアプリから写真を共有して Alt テキストを生成するか、ギャラリーから写真を選択してください。</string>
+    <string name="button_pick_a_picture">写真を選択</string>
+    <string name="default_prompt_text">ソーシャルメディアで使用するために写真のALTテキストを書いてください。写真内にあるテキストも含めてください。</string>
+    <!-- TRANSLATORS: %1$s is the number of the step, %2$s is the state of the step -->
+    <string name="step_content_description">ステップ %1$s: %2$s</string>
+    <string name="step_state_failed">失敗</string>
+    <string name="step_state_completed">完了</string>
+    <string name="step_state_active">進行中</string>
+    <string name="step_state_upcoming">未実行</string>
+    <string name="settings_preset_prompt_help">Alt テキストを生成するために AI モデルに送信されるデフォルトのプロンプトテキストです。</string>
+    <string name="snackbar_settings_saved">設定が保存されました</string>
+    <string name="button_dismiss">閉じる</string>
+    <string name="error_failed_to_load_image">画像を読み込めませんでした</string>
+    <string name="title_result">結果</string>
+    <string name="snackbar_copied_to_clipboard">クリップボードにコピーしました</string>
+    <string name="unknown_exception">不明な例外</string>
+    <string name="request_cancelled">リクエストがキャンセルされました</string>
+    <string name="settings_enable_streaming">ストリーミングを有効にする</string>
+</resources>
