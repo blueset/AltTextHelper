@@ -51,8 +51,6 @@ data class OpenAICompatibleConfig(
     val baseUrl: String = "",
     val model: String = "",
 ) : ApiConfig {
-    val baseUrlWithSlash: String
-        get() = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
     override val isFilled: Boolean
         get() = apiKey.isNotEmpty() && baseUrl.isNotEmpty() && model.isNotEmpty()
 }
@@ -127,7 +125,7 @@ object SettingsDataStore {
         return context.dataStore.data.map { preferences ->
             val apiType = ApiType.fromString(preferences[API_TYPE])
             val apiConfigJson = preferences[API_CONFIG]
-            val enableStreaming = preferences[ENABLE_STREAMING]?.toBoolean() ?: false
+            val enableStreaming = preferences[ENABLE_STREAMING]?.toBoolean() ?: true
 
             val configs = try {
                 apiConfigJson?.let { Json.decodeFromString<ApiConfigs>(apiConfigJson) }
@@ -150,7 +148,7 @@ data class Settings(
     val configs: ApiConfigs,
     val apiType: ApiType,
     val presetPrompt: String,
-    val enableStreaming: Boolean = false
+    val enableStreaming: Boolean = true
 ) {
     companion object {
         fun build(

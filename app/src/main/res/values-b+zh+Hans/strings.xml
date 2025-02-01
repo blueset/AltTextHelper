@@ -10,7 +10,7 @@
     <string name="azure_openai_resource_name">资源名称</string>
     <string name="azure_openai_api_key_help">API Key 是一个 32 位十六进制字符串。请提供 Key 1 或 Key 2。</string>
 
-    <string name="azure_openai_api_resource_name_help"><![CDATA[您的 Azure OpenAI 资源名称，也可以在端点 URL 中找到，例如 <font face="monospace">https://<b>您的资源名称</b>.openai.azure.com/</font>]]></string>
+    <string name="azure_openai_api_resource_name_help"><![CDATA[您的 Azure OpenAI 资源名称，也可以在端点 URL 中找到，例如 <font face="monospace">https://<b>资源名称</b>.openai.azure.com/</font>]]></string>
     <string name="azure_openai_guide"><![CDATA[在此创建 API Key、资源与部署：<a href="https://ai.azure.com/">https://ai.azure.com/</a>。]]></string>
 
     <string name="azure_openai_name">Azure OpenAI</string>
@@ -30,7 +30,7 @@
 
     <string name="openai_organization">组织（可选）</string>
     <string name="settings_model">模型</string>
-    <string name="settings_preset_prompt">预设提示语/string>
+    <string name="settings_preset_prompt">预设提示语</string>
     <string name="settings_api_type">API 类型</string>
     <string name="settings_base64_image">Base64 图片</string>
     <string name="button_save">保存</string>

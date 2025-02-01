@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Alt テキストヘルパー</string>
     <!-- TRANSLATORS: %1$s is the name of the app -->
-    <string name="welcome_to">%1$s へようこそ</string>
+    <string name="welcome_to">%1$sへようこそ</string>
     <string name="title_activity_share_receiver">Alt テキストを生成</string>
     <string name="settings_api_key">API キー</string>
     <string name="azure_openai_deployment_id">デプロイ ID</string>
     <string name="azure_openai_resource_name">リソース名</string>
-    <string name="azure_openai_api_key_help">API キーは32桁の16進数文字列です。Key 1 または Key 2 のいずれかを入力してください。</string>
-    <string name="azure_openai_api_resource_name_help"><![CDATA[Azure OpenAIリソースの名前です。エンドポイント URL にも含まれています。例: <font face="monospace">https://<b>リソースの名前</b>.openai.azure.com/</font>]]></string>
+    <string name="azure_openai_api_key_help">API キーは 32 桁の 16 進数文字列です。Key 1 または Key 2 のいずれかを入力してください。</string>
+    <string name="azure_openai_api_resource_name_help"><![CDATA[Azure OpenAI リソースの名前です。エンドポイント URL にも含まれています。例: <font face="monospace">https://<b>リソース名</b>.openai.azure.com/</font>]]></string>
     <string name="azure_openai_guide"><![CDATA[<a href="https://ai.azure.com/">https://ai.azure.com/</a> で API キーやリソース、デプロイを作成してください。]]></string>
     <string name="azure_openai_name">Azure OpenAI</string>
     <string name="openai_name">OpenAI</string>
@@ -18,8 +18,8 @@
     <string name="openai_compat_guide_1">「OpenAI 互換」構成では、OpenAI に類似した動作をする API エンドポイントを想定しています。この構成の場合、以下のように HTTP POST リクエストが送信されます。</string>
     <string name="openai_compat_guide_2">そして、成功時には少なくとも以下のフィールドを含むJSONでのレスポンスを想定しています:</string>
     <string name="openai_compat_guide_3">上記 API エンドポイントがサービスプロバイダの API 仕様に適合し、かつアプリが既に対応していない場合は、このオプションを利用できます。</string>
-    <string name="openai_compat_guide_stream_1">「OpenAI 互換」構成では、OpenAIに類似したストリーミングレスポンスをサポートする API エンドポイントを想定しています。この構成の場合、以下のようにHTTP POSTリクエストが送信され、レスポンスとして[サーバー送信イベント（SSE）](https://developer.mozilla.org/ja/docs/Web/API/Server-sent_events/Using_server-sent_events)を受信し、各イベントには生成されたテキストの差分が含まれます。</string>
-    <string name="openai_compat_guide_stream_2">サーバーはイベントのストリームを返し、各イベントには少なくとも以下のフィールドを含むJSONペイロードが含まれている必要があります:</string>
+    <string name="openai_compat_guide_stream_1">「OpenAI 互換」構成では、OpenAI に類似したストリーミングレスポンスをサポートする API エンドポイントを想定しています。この構成の場合、以下のように HTTP POST リクエストが送信され、レスポンスとして[サーバー送信イベント（SSE）](https://developer.mozilla.org/ja/docs/Web/API/Server-sent_events/Using_server-sent_events)を受信し、各イベントには生成されたテキストの差分が含まれます。</string>
+    <string name="openai_compat_guide_stream_2">サーバーはイベントのストリームを返し、各イベントには少なくとも以下のフィールドを含む JSON ペイロードが含まれている必要があります:</string>
     <string name="openai_compat_guide_stream_3">各イベントには生成されたテキストの差分が含まれ、それらを連結して完全なALTテキストを形成します。ストリームは `[DONE]` イベントで終了します。上記 API エンドポイントがサービスプロバイダの API 仕様に合致し、かつアプリが既に対応していない場合には、このオプションを利用できます。</string>
     <string name="openai_organization">組織（任意）</string>
     <string name="settings_model">モデル</string>
@@ -45,9 +45,9 @@
     <string name="no_preset_prompt">Alt テキスト生成のためのデフォルトプロンプトを設定できます。</string>
     <string name="button_cancel">キャンセル</string>
     <!-- TRANSLATORS: %1$s is the name of the app -->
-    <string name="guide_set_up">%1$s を設定</string>
+    <string name="guide_set_up">%1$sを設定</string>
     <!-- TRANSLATORS: %1$s is the name of the app -->
-    <string name="guide_set_up_body_text"><![CDATA[%1$s は、AIを使用して画像に説明的な Alt テキストを生成します。このアプリを利用するには、以下のいずれかの対応サービスから独自の API キーを用意する必要があります:\n\n- OpenAI (OpenAI または Azure が提供)\n- Anthropic Claude\n- Google Gemini\n- その他の OpenAI 互換 API\n\n> 注意: これらの AI サービスを利用すると、それぞれの価格に応じたコストが発生する場合があります。\n\nまずは設定画面に移動し、API サービスと API キーを設定してください。また、Alt テキストの生成方法をカスタマイズするために、デフォルトプロンプトを設定することもできます。]]></string>
+    <string name="guide_set_up_body_text"><![CDATA[%1$sは、AI を使用して画像に説明的な Alt テキストを生成します。このアプリを利用するには、以下のいずれかの対応サービスから独自の API キーを用意する必要があります:\n\n- OpenAI（OpenAI または Azure が提供）\n- Anthropic Claude\n- Google Gemini\n- その他の OpenAI 互換 API\n\n> 注意：これらの AI サービスを利用すると、それぞれの価格に応じたコストが発生する場合があります。\n\nまずは設定画面に移動し、API サービスと API キーを設定してください。また、Alt テキストの生成方法をカスタマイズするために、デフォルトプロンプトを設定することもできます。]]></string>
     <string name="guide_generate">画像から Alt テキストを生成する</string>
     <string name="guide_generate_description">任意のアプリから写真を共有して Alt テキストを生成するか、ギャラリーから写真を選択してください。</string>
     <string name="button_pick_a_picture">写真を選択</string>
