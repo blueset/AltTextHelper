@@ -29,7 +29,7 @@ Make your content more accessible today with Alt Text Helper – the smart way t
 
 * Visit https://groups.google.com/g/1a23-apk-closed-testing and join the group with your Google account
 * Visit https://play.google.com/apps/testing/studio1a23.altTextAi, log in with the same Google account and click “Join the program”
-* Visit [Simple Memo – Apps on Google Play](https://play.google.com/apps/testing/studio1a23.altTextAi) to install the app to your watch.
+* Visit [AI Text Helper – Apps on Google Play](https://play.google.com/apps/testing/studio1a23.altTextAi) to install the app to your watch.
 
 ## License
 
